@@ -3,9 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 import './App.css';
 
 // --- CONFIGURATION ---
-const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
-const SUPABASE_KEY = 'YOUR_ANON_KEY_HERE';
-const ADMIN_EMAIL = 'admin@christmas.com'; 
+const SUPABASE_URL = 'https://fwlsrkvvlefzpweduvdv.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3bHNya3Z2bGVmenB3ZWR1dmR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5NjQ4ODIsImV4cCI6MjA4MTU0MDg4Mn0.D2AqWyZWoAdsEQ7LZXeq5xeCrAoWwBtRBZ_8h3mUKQY';
+const ADMIN_EMAIL = 'chavo.kentjohn@gmail.com'; 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
