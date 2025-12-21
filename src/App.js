@@ -224,13 +224,13 @@ function App() {
                       ) : (
                         /* PHASE B: REVEALED */
                         <div className="result-card festive-mode scale-up">
-                           <h1>🎁 YOU GOT...</h1>
+                           <h1>🎁 IMONG NAPILIAN KAY SIIII...</h1>
                            <div className="funny-quote">
                               {myPlayer?.picked_number ? (
                                 <>
                                   <span className="target-name big-reveal">
                                     {players[myPlayer.picked_number - 1]?.name || "Error"}
-                                  </span>!
+                                  </span>
                                   <br/><br/>
                                   "Neeeeeverrrrr dili mu-attend, dili mu-attend!" 🤣
                                 </>
