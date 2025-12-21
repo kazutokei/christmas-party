@@ -3,9 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 import './App.css';
 
 // --- CONFIGURATION ---
-const SUPABASE_URL = 'https://fwlsrkvvlefzpweduvdv.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3bHNya3Z2bGVmenB3ZWR1dmR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5NjQ4ODIsImV4cCI6MjA4MTU0MDg4Mn0.D2AqWyZWoAdsEQ7LZXeq5xeCrAoWwBtRBZ_8h3mUKQY';
-const ADMIN_EMAIL = 'chavo.kentjohn@gmail.com'; 
+const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+const SUPABASE_KEY = 'YOUR_ANON_KEY_HERE';
+const ADMIN_EMAIL = 'admin@christmas.com'; 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -93,6 +93,14 @@ function App() {
     await supabase.from('game_state').update({ is_started: true }).eq('id', 1);
   };
 
+  const handleResetGame = async () => {
+    const confirm = window.confirm("⚠️ WARNING: This will RESET everyone's picks and go back to the Lobby. Are you sure?");
+    if (confirm) {
+      await supabase.from('game_state').update({ is_started: false, reveal_phase: false }).eq('id', 1);
+      await supabase.from('players').update({ picked_number: null }).gt('id', 0);
+    }
+  };
+
   const handleGlobalReveal = async () => {
     const confirm = window.confirm("Are you sure? This will show EVERYONE their results immediately!");
     if (confirm) {
@@ -112,7 +120,6 @@ function App() {
   const myBroughtGift = myPlayer ? players.findIndex(p => p.id === myPlayer.id) + 1 : -1;
   const isGameOver = players.length > 0 && !activePlayer;
 
-  // The View switches to "Results" if Game is Over OR Admin Forced Reveal
   const showResultsView = isGameOver || isRevealed;
 
   return (
@@ -150,6 +157,7 @@ function App() {
                     <div className="admin-panel">
                       <div className="success-badge">👑 You are the Host</div>
                       <button className="btn-primary" onClick={handleStartGame}>Start Game &rarr;</button>
+                      <button className="btn-secondary" style={{marginTop:'10px'}} onClick={handleResetGame}>🔄 Reset Everything</button>
                     </div>
                   ) : <div className="success-badge">✅ You are ready!</div>}
                   <div className="player-list-container">
@@ -170,7 +178,7 @@ function App() {
                     ) : null}
                   </div>
 
-                  {/* --- NEW: ADMIN PANEL ALWAYS VISIBLE --- */}
+                  {/* ADMIN PANEL */}
                   {isAdmin && (
                     <div className="admin-controls">
                        <p style={{marginTop:0, fontWeight:'bold', color:'#888'}}>HOST PANEL</p>
@@ -181,19 +189,18 @@ function App() {
                        ) : (
                           <div className="admin-banner">✅ RESULTS ARE LIVE!</div>
                        )}
+                       <button className="btn-secondary" onClick={handleResetGame}>🔄 Reset Game</button>
                     </div>
                   )}
 
-                  {/* --- MAIN GAME AREA --- */}
+                  {/* MAIN GAME AREA */}
                   {showResultsView ? (
                     isAdmin ? (
                       /* 1. ADMIN VIEW (Full List) */
                       <div className="results-container">
                         {players.map((p) => {
                           const giftNumber = p.picked_number;
-                          // Safety check: if admin forces reveal early, giftNumber might be null
                           const gifter = giftNumber ? players[giftNumber - 1] : null; 
-
                           return (
                             <div key={p.id} className="result-card festive-mode">
                               <div className="picker-header">👤 <strong>{p.name}</strong></div>
@@ -222,16 +229,17 @@ function App() {
                           <p className="sub-text">"Neeeeeverrrrr dili mu-attend!"</p>
                         </div>
                       ) : (
-                        /* PHASE B: REVEALED */
+                        /* PHASE B: REVEALED (UPDATED WITH BISAYA TEXT) */
                         <div className="result-card festive-mode scale-up">
-                           <h1>🎁 IMONG NAPILIAN KAY SIIII...</h1>
+                           {/* CHANGED THIS HEADER: */}
+                           <h1 style={{fontSize: '1.5rem', color: '#888'}}>IMONG NAPILIAN KAY SI......</h1>
                            <div className="funny-quote">
                               {myPlayer?.picked_number ? (
                                 <>
                                   <span className="target-name big-reveal">
                                     {players[myPlayer.picked_number - 1]?.name || "Error"}
                                   </span>
-                                  <br/><br/>
+                                  <br/>
                                   "Neeeeeverrrrr dili mu-attend, dili mu-attend!" 🤣
                                 </>
                               ) : (
@@ -242,7 +250,7 @@ function App() {
                       )
                     )
                   ) : (
-                    /* GAME GRID (Only shows if NOT revealed and NOT game over) */
+                    /* GAME GRID */
                     <div className="grid-container">
                       {players.map((_, i) => {
                         const num = i + 1;

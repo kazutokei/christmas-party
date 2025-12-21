@@ -27,6 +27,21 @@ body {
 .btn-primary { background: #6B8E23; color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 0 #556B2F; }
 .btn-primary:active { transform: translateY(4px); box-shadow: none; }
 .btn-primary.full-width { width: 100%; margin-top: 10px; }
+
+/* --- BUTTON VARIANTS --- */
+.btn-secondary {
+  background: white;
+  border: 2px solid #CCC;
+  color: #666;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+}
+.btn-secondary:hover { background: #F0F0F0; border-color: #999; color: #333; }
+
 .auth-toggle { margin-top: 20px; font-size: 0.9rem; color: #888; cursor: pointer; text-decoration: underline; }
 
 /* --- MAIN LAYOUT --- */
