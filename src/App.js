@@ -90,7 +90,8 @@ function App() {
   };
 
   const handleStartGame = async () => {
-    await supabase.from('game_state').update({ is_started: true }).eq('id', 1);
+    // UPDATED: Starting game also resets reveal_phase to FALSE to prevent bugs
+    await supabase.from('game_state').update({ is_started: true, reveal_phase: false }).eq('id', 1);
   };
 
   const handleResetGame = async () => {
@@ -207,7 +208,8 @@ function App() {
                               <div className="funny-quote">
                                 {gifter ? (
                                   <>
-                                    "Imong napilian kay si <span className="target-name">{gifter.name}</span>! <br/>
+                                    {/* UPDATED: Removed "!" after target-name */}
+                                    "Imong napilian kay si <span className="target-name">{gifter.name}</span> <br/>
                                     Neeeeeverrrrr dili mu-attend!" 🤣
                                   </>
                                 ) : (
@@ -229,13 +231,13 @@ function App() {
                           <p className="sub-text">"Neeeeeverrrrr dili mu-attend!"</p>
                         </div>
                       ) : (
-                        /* PHASE B: REVEALED (UPDATED WITH BISAYA TEXT) */
+                        /* PHASE B: REVEALED (UPDATED) */
                         <div className="result-card festive-mode scale-up">
-                           {/* CHANGED THIS HEADER: */}
                            <h1 style={{fontSize: '1.5rem', color: '#888'}}>IMONG NAPILIAN KAY SI......</h1>
                            <div className="funny-quote">
                               {myPlayer?.picked_number ? (
                                 <>
+                                  {/* UPDATED: Removed "!" after target-name */}
                                   <span className="target-name big-reveal">
                                     {players[myPlayer.picked_number - 1]?.name || "Error"}
                                   </span>
