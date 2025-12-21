@@ -5,7 +5,7 @@ import './App.css';
 // --- CONFIGURATION ---
 const SUPABASE_URL = 'https://fwlsrkvvlefzpweduvdv.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3bHNya3Z2bGVmenB3ZWR1dmR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5NjQ4ODIsImV4cCI6MjA4MTU0MDg4Mn0.D2AqWyZWoAdsEQ7LZXeq5xeCrAoWwBtRBZ_8h3mUKQY';
-const ADMIN_EMAIL = 'chavo.kentjohn@gmail.com'; // <--- TYPE YOUR ADMIN EMAIL HERE
+const ADMIN_EMAIL = 'chavo.kentjohn@gmail.com'; 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -13,13 +13,17 @@ function App() {
   const [session, setSession] = useState(null);
   const [players, setPlayers] = useState([]);
   const [gameStarted, setGameStarted] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
   const [myPlayer, setMyPlayer] = useState(null);
+  
+  // Login States
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
 
-  const isAdmin = session?.user?.email === ADMIN_EMAIL;
+  // Case-insensitive Admin Check
+  const isAdmin = session?.user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -33,6 +37,7 @@ function App() {
     });
 
     return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchInitialData = async (userId) => {
@@ -41,8 +46,12 @@ function App() {
       setPlayers(playerList);
       setMyPlayer(playerList.find(p => p.user_id === userId));
     }
+    
     const { data: status } = await supabase.from('game_state').select('*').eq('id', 1).single();
-    if (status) setGameStarted(status.is_started);
+    if (status) {
+      setGameStarted(status.is_started);
+      setIsRevealed(status.reveal_phase);
+    }
     
     supabase.channel('room1')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'players' }, () => {
@@ -52,7 +61,10 @@ function App() {
         });
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'game_state' }, (payload) => {
-        if (payload.new.id === 1) setGameStarted(payload.new.is_started);
+        if (payload.new.id === 1) {
+          setGameStarted(payload.new.is_started);
+          setIsRevealed(payload.new.reveal_phase);
+        }
       })
       .subscribe();
   };
@@ -81,6 +93,13 @@ function App() {
     await supabase.from('game_state').update({ is_started: true }).eq('id', 1);
   };
 
+  const handleGlobalReveal = async () => {
+    const confirm = window.confirm("Are you sure? This will show EVERYONE their results immediately!");
+    if (confirm) {
+      await supabase.from('game_state').update({ reveal_phase: true }).eq('id', 1);
+    }
+  };
+
   const handlePickNumber = async (number) => {
     const activePlayer = players.find(p => p.picked_number === null);
     if (activePlayer?.id !== myPlayer?.id) return alert("Wait your turn!");
@@ -91,6 +110,10 @@ function App() {
   const activePlayer = players.find(p => p.picked_number === null);
   const isMyTurn = activePlayer?.id === myPlayer?.id;
   const myBroughtGift = myPlayer ? players.findIndex(p => p.id === myPlayer.id) + 1 : -1;
+  const isGameOver = players.length > 0 && !activePlayer;
+
+  // The View switches to "Results" if Game is Over OR Admin Forced Reveal
+  const showResultsView = isGameOver || isRevealed;
 
   return (
     <div className="App">
@@ -103,7 +126,7 @@ function App() {
         {!session ? (
           <div className="auth-container">
             <div className="auth-card">
-              <h1 className="auth-title">{isRegistering ? "Join Party 🎄" : "Welcome Back!"}</h1>
+              <h1 className="auth-title">{isRegistering ? "Join Party 🎄" : "Welcome Back 🎅"}</h1>
               <form onSubmit={handleAuth}>
                 {isRegistering && <div className="input-group"><label>Name</label><input value={displayName} onChange={e => setDisplayName(e.target.value)} /></div>}
                 <div className="input-group"><label>Email</label><input type="email" value={email} onChange={e => setEmail(e.target.value)} /></div>
@@ -119,6 +142,7 @@ function App() {
           <>
             <div className="text-section">
               {!gameStarted ? (
+                // LOBBY
                 <>
                   <h1 className="hero-title">Welcome, {myPlayer?.name || "Guest"}!</h1>
                   <p className="hero-subtitle">Wait for everyone to arrive!</p>
@@ -134,24 +158,106 @@ function App() {
                   </div>
                 </>
               ) : (
+                // GAME ACTIVE OR REVEALED
                 <>
                   <div className="status-bar">
-                    {activePlayer ? (isMyTurn ? <h2 className="status-text turn-mine">✨ IT'S YOUR TURN! ✨</h2> : <h2 className="status-text turn-other">⏳ Waiting for {activePlayer.name}...</h2>) : <h2 className="status-text turn-done">🎉 Merry Christmas!</h2>}
+                    {showResultsView ? (
+                      isRevealed ? 
+                      <h2 className="status-text turn-done">🎄 MERRY CHRISTMAS! 🎄</h2> :
+                      <h2 className="status-text turn-done">🎉 REVEAL TIME! 🎉</h2>
+                    ) : activePlayer ? (
+                      isMyTurn ? <h2 className="status-text turn-mine">✨ IT'S YOUR TURN! ✨</h2> : <h2 className="status-text turn-other">⏳ Waiting for {activePlayer.name}...</h2>
+                    ) : null}
                   </div>
-                  <div className="grid-container">
-                    {players.map((_, i) => {
-                      const num = i + 1;
-                      const takenBy = players.find(p => p.picked_number === num);
-                      const isMine = takenBy?.id === myPlayer?.id;
-                      const isMyBrought = (num === myBroughtGift);
-                      const disabled = !!takenBy || isMyBrought || !isMyTurn;
-                      return (
-                        <button key={num} className={`gift-box-btn ${takenBy?'taken':''} ${isMine?'mine':''} ${isMyBrought?'disabled-own':''}`} onClick={() => !disabled && handlePickNumber(num)} disabled={disabled}>
-                          {takenBy ? `🔒 ${takenBy.name}` : isMyBrought ? "🚫 MY GIFT" : `🎁 #${num}`}
-                        </button>
-                      );
-                    })}
-                  </div>
+
+                  {/* --- NEW: ADMIN PANEL ALWAYS VISIBLE --- */}
+                  {isAdmin && (
+                    <div className="admin-controls">
+                       <p style={{marginTop:0, fontWeight:'bold', color:'#888'}}>HOST PANEL</p>
+                       {!isRevealed ? (
+                          <button className="btn-primary reveal-btn" onClick={handleGlobalReveal}>
+                            🔓 FORCE REVEAL TO EVERYONE
+                          </button>
+                       ) : (
+                          <div className="admin-banner">✅ RESULTS ARE LIVE!</div>
+                       )}
+                    </div>
+                  )}
+
+                  {/* --- MAIN GAME AREA --- */}
+                  {showResultsView ? (
+                    isAdmin ? (
+                      /* 1. ADMIN VIEW (Full List) */
+                      <div className="results-container">
+                        {players.map((p) => {
+                          const giftNumber = p.picked_number;
+                          // Safety check: if admin forces reveal early, giftNumber might be null
+                          const gifter = giftNumber ? players[giftNumber - 1] : null; 
+
+                          return (
+                            <div key={p.id} className="result-card festive-mode">
+                              <div className="picker-header">👤 <strong>{p.name}</strong></div>
+                              <div className="funny-quote">
+                                {gifter ? (
+                                  <>
+                                    "Imong napilian kay si <span className="target-name">{gifter.name}</span>! <br/>
+                                    Neeeeeverrrrr dili mu-attend!" 🤣
+                                  </>
+                                ) : (
+                                  <span style={{color:'#999'}}>Has not picked a gift yet...</span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      /* 2. PLAYER VIEW (Secret vs Revealed) */
+                      !isRevealed ? (
+                        /* PHASE A: SECRET */
+                        <div className="secret-card">
+                          <h1>🤫 It's a Secret!</h1>
+                          <p>Wait for the Host to reveal the results...</p>
+                          <img src="/neeeever.jpg" alt="Neeeeeverrrrr" className="neeeever-image" />
+                          <p className="sub-text">"Neeeeeverrrrr dili mu-attend!"</p>
+                        </div>
+                      ) : (
+                        /* PHASE B: REVEALED */
+                        <div className="result-card festive-mode scale-up">
+                           <h1>🎁 YOU GOT...</h1>
+                           <div className="funny-quote">
+                              {myPlayer?.picked_number ? (
+                                <>
+                                  <span className="target-name big-reveal">
+                                    {players[myPlayer.picked_number - 1]?.name || "Error"}
+                                  </span>!
+                                  <br/><br/>
+                                  "Neeeeeverrrrr dili mu-attend, dili mu-attend!" 🤣
+                                </>
+                              ) : (
+                                <p>You didn't pick a number yet! 😅</p>
+                              )}
+                           </div>
+                        </div>
+                      )
+                    )
+                  ) : (
+                    /* GAME GRID (Only shows if NOT revealed and NOT game over) */
+                    <div className="grid-container">
+                      {players.map((_, i) => {
+                        const num = i + 1;
+                        const takenBy = players.find(p => p.picked_number === num);
+                        const isMine = takenBy?.id === myPlayer?.id;
+                        const isMyBrought = (num === myBroughtGift);
+                        const disabled = !!takenBy || isMyBrought || !isMyTurn;
+                        return (
+                          <button key={num} className={`gift-box-btn ${takenBy?'taken':''} ${isMine?'mine':''} ${isMyBrought?'disabled-own':''}`} onClick={() => !disabled && handlePickNumber(num)} disabled={disabled}>
+                            {takenBy ? `🔒 ${takenBy.name}` : isMyBrought ? "🚫 MY GIFT" : `🎁 #${num}`}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </>
               )}
             </div>
