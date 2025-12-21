@@ -30,7 +30,7 @@ body {
 .btn-primary:active { transform: translateY(4px); box-shadow: none; }
 .btn-primary.full-width { width: 100%; margin-top: 10px; }
 
-/* New Secondary Button (Reset) */
+/* RESET BUTTON (Grey) */
 .btn-secondary {
   background: white;
   border: 2px solid #CCC;
@@ -55,11 +55,19 @@ body {
 .hero-subtitle { font-size: 1.1rem; color: #666; margin-bottom: 30px; }
 .hero-image { max-width: 90%; animation: float 6s infinite ease-in-out; }
 
-/* --- LOBBY CHIPS --- */
+/* --- LOBBY STYLES --- */
 .player-list-container h3 { color: #666; margin-bottom: 15px; }
 .player-chips { display: flex; flex-wrap: wrap; gap: 10px; }
 .chip { background: white; border: 2px solid #F0F0F0; padding: 5px 15px; border-radius: 20px; font-weight: 600; color: #555; }
 .success-badge { background: #E8F5E9; border: 1px solid #C8E6C9; color: #2E7D32; padding: 15px; border-radius: 12px; font-weight: 700; display: inline-block; margin-bottom: 20px; }
+
+/* NEW: Admin Panel in Lobby */
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between Start and Reset buttons */
+  margin-bottom: 30px;
+}
 
 /* --- GAME STATUS BAR --- */
 .status-bar { padding: 20px; background: white; border-radius: 16px; border-left: 6px solid #E0E0E0; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -68,7 +76,7 @@ body {
 .turn-other { color: #999; }
 .turn-done { color: #D64045; }
 
-/* --- ADMIN CONTROLS (ALWAYS VISIBLE) --- */
+/* --- ADMIN CONTROLS (IN-GAME) --- */
 .admin-controls { 
   background: white; 
   padding: 20px; 
