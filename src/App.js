@@ -175,7 +175,7 @@ function App() {
                       <h2 className="status-text turn-done">MERRY CHRISTMAS!</h2> :
                       <h2 className="status-text turn-done">REVEAL TIME!</h2>
                     ) : activePlayer ? (
-                      isMyTurn ? <h2 className="status-text turn-mine">✨ IT'S YOUR TURN! ✨</h2> : <h2 className="status-text turn-other">⏳ Waiting for {activePlayer.name}...</h2>
+                      isMyTurn ? <h2 className="status-text turn-mine">PILIA IMONG REGALO OYTCH!</h2> : <h2 className="status-text turn-other">⏳ Waiting for {activePlayer.name}...</h2>
                     ) : null}
                   </div>
 
