@@ -95,7 +95,7 @@ function App() {
   };
 
   const handleResetGame = async () => {
-    const confirm = window.confirm("⚠️ WARNING: This will RESET everyone's picks and go back to the Lobby. Are you sure?");
+    const confirm = window.confirm("WARNING: This will RESET everyone's picks and go back to the Lobby. Are you sure?");
     if (confirm) {
       await supabase.from('game_state').update({ is_started: false, reveal_phase: false }).eq('id', 1);
       await supabase.from('players').update({ picked_number: null }).gt('id', 0);
@@ -134,7 +134,7 @@ function App() {
         {!session ? (
           <div className="auth-container">
             <div className="auth-card">
-              <h1 className="auth-title">{isRegistering ? "Join Party 🎄" : "Welcome Back 🎅"}</h1>
+              <h1 className="auth-title">{isRegistering ? "Join Party" : "Welcome Back"}</h1>
               <form onSubmit={handleAuth}>
                 {isRegistering && <div className="input-group"><label>Name</label><input value={displayName} onChange={e => setDisplayName(e.target.value)} /></div>}
                 <div className="input-group"><label>Email</label><input type="email" value={email} onChange={e => setEmail(e.target.value)} /></div>
@@ -156,11 +156,11 @@ function App() {
                   <p className="hero-subtitle">Wait for everyone to arrive!</p>
                   {isAdmin ? (
                     <div className="admin-panel">
-                      <div className="success-badge">👑 You are the Host</div>
+                      <div className="success-badge">You are the Host</div>
                       <button className="btn-primary" onClick={handleStartGame}>Start Game &rarr;</button>
                       <button className="btn-secondary" style={{marginTop:'10px'}} onClick={handleResetGame}>🔄 Reset Everything</button>
                     </div>
-                  ) : <div className="success-badge">✅ You are ready!</div>}
+                  ) : <div className="success-badge">You are ready!</div>}
                   <div className="player-list-container">
                     <h3>Who is here ({players.length})</h3>
                     <div className="player-chips">{players.map(p => <span key={p.id} className="chip">👤 {p.name}</span>)}</div>
@@ -172,8 +172,8 @@ function App() {
                   <div className="status-bar">
                     {showResultsView ? (
                       isRevealed ? 
-                      <h2 className="status-text turn-done">🎄 MERRY CHRISTMAS! 🎄</h2> :
-                      <h2 className="status-text turn-done">🎉 REVEAL TIME! 🎉</h2>
+                      <h2 className="status-text turn-done">MERRY CHRISTMAS!</h2> :
+                      <h2 className="status-text turn-done">REVEAL TIME!</h2>
                     ) : activePlayer ? (
                       isMyTurn ? <h2 className="status-text turn-mine">✨ IT'S YOUR TURN! ✨</h2> : <h2 className="status-text turn-other">⏳ Waiting for {activePlayer.name}...</h2>
                     ) : null}
@@ -242,10 +242,10 @@ function App() {
                                     {players[myPlayer.picked_number - 1]?.name || "Error"}
                                   </span>
                                   <br/>
-                                  "Neeeeeverrrrr dili mu-attend, dili mu-attend!" 🤣
+                                  "I-andam na imong amot"
                                 </>
                               ) : (
-                                <p>You didn't pick a number yet! 😅</p>
+                                <p>You didn't pick a number yet!</p>
                               )}
                            </div>
                         </div>
@@ -262,7 +262,7 @@ function App() {
                         const disabled = !!takenBy || isMyBrought || !isMyTurn;
                         return (
                           <button key={num} className={`gift-box-btn ${takenBy?'taken':''} ${isMine?'mine':''} ${isMyBrought?'disabled-own':''}`} onClick={() => !disabled && handlePickNumber(num)} disabled={disabled}>
-                            {takenBy ? `🔒 ${takenBy.name}` : isMyBrought ? "🚫 MY GIFT" : `🎁 #${num}`}
+                            {takenBy ? `🔒 ${takenBy.name}` : isMyBrought ? "MY GIFT" : `#${num}`}
                           </button>
                         );
                       })}
