@@ -24,11 +24,13 @@ body {
 .input-group { margin-bottom: 15px; text-align: left; }
 .input-group label { display: block; font-size: 0.8rem; font-weight: 800; color: #6B8E23; margin-bottom: 5px; text-transform: uppercase; }
 .input-group input { width: 100%; padding: 12px; border: 2px solid #E0E0E0; border-radius: 10px; background: #FDFCF6; }
+
+/* --- BUTTONS --- */
 .btn-primary { background: #6B8E23; color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 0 #556B2F; }
 .btn-primary:active { transform: translateY(4px); box-shadow: none; }
 .btn-primary.full-width { width: 100%; margin-top: 10px; }
 
-/* --- BUTTON VARIANTS --- */
+/* New Secondary Button (Reset) */
 .btn-secondary {
   background: white;
   border: 2px solid #CCC;
@@ -39,6 +41,7 @@ body {
   cursor: pointer;
   margin-top: 10px;
   width: 100%;
+  transition: all 0.2s;
 }
 .btn-secondary:hover { background: #F0F0F0; border-color: #999; color: #333; }
 
@@ -84,6 +87,11 @@ body {
   letter-spacing: 1px;
   box-shadow: 0 4px 0 #9E2A2E;
   margin-top: 10px;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
 }
 .reveal-btn:active { box-shadow: none; transform: translateY(4px); }
 .admin-banner { 
