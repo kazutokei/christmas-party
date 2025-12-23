@@ -20,7 +20,7 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
 
   return (
     <>
-      {/* ROOM CODE CARD */}
+      {/* THIS IS THE MISSING PART IN YOUR SCREENSHOT */}
       <div style={{textAlign: 'center', marginBottom: '30px', background: '#fff', padding: '20px', borderRadius: '15px', border: '2px dashed #D64045'}}>
         <span style={{fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', fontWeight:'bold'}}>Room Code</span>
         <h1 style={{fontSize: '3.5rem', color: '#D64045', margin: '5px 0', letterSpacing: '5px', fontFamily: 'monospace', fontWeight:'900'}}>{roomCode}</h1>
@@ -47,7 +47,7 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
             </div>
           </div>
           
-          {/* Host Wishlist (Only if they joined as a player) */}
+          {/* Host Wishlist (If they are playing) */}
           {myPlayer && (
             <div className="input-group" style={{textAlign:'left', marginTop:'15px'}}>
               <label>📝 Your Wishlist</label>

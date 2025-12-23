@@ -6,46 +6,38 @@ import ResultsView from './ResultsView';
 
 function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePlayer, isMyTurn, myBroughtGift, actions }) {
   const showResults = isGameOver || isRevealed;
-  
-  // Toggle: If I am just a Host (spectator), show Master List. If I am playing, show Player View.
   const [showMasterList, setShowMasterList] = useState(!myPlayer);
 
   return (
-    <>
+    <div className="game-card">
       <div className="status-bar">
         {showResults ? (
-          isRevealed ? 
-          <h2 className="status-text turn-done">{APP_TEXT.christmasTitle}</h2> :
-          <h2 className="status-text turn-done">{APP_TEXT.revealTitle}</h2>
+          <h2 style={{margin:0, color:'#c0392b'}}>{isRevealed ? APP_TEXT.christmasTitle : APP_TEXT.revealTitle}</h2>
         ) : activePlayer ? (
-          isMyTurn ? <h2 className="status-text turn-mine">{APP_TEXT.turnMine}</h2> : <h2 className="status-text turn-other">⏳ Waiting for {activePlayer.name}...</h2>
+          isMyTurn ? 
+          <h2 style={{margin:0, color:'#27ae60'}}>✨ IT'S YOUR TURN! ✨</h2> : 
+          <h2 style={{margin:0, color:'#7f8c8d'}}>⏳ Waiting for {activePlayer.name}...</h2>
         ) : null}
       </div>
 
-      {isHost && (
-        <AdminControls isRevealed={isRevealed} actions={actions} />
-      )}
+      {isHost && <AdminControls isRevealed={isRevealed} actions={actions} />}
 
-      {/* Host Toggle: Only show if I am a Host AND a Player AND results are out */}
       {isHost && showResults && myPlayer && (
-        <div style={{marginBottom: '20px', textAlign: 'center'}}>
-          <button 
-            className="btn-secondary" 
-            style={{background: showMasterList ? '#333' : '#eee', color: showMasterList ? 'white' : '#333', fontSize:'0.9rem'}}
-            onClick={() => setShowMasterList(!showMasterList)}
-          >
-            {showMasterList ? "👀 Switch to Player View" : "📜 Switch to Master List (Spoilers!)"}
-          </button>
-        </div>
+        <button 
+          className="btn-secondary" 
+          style={{marginBottom: '20px', fontSize: '0.8rem'}}
+          onClick={() => setShowMasterList(!showMasterList)}
+        >
+          {showMasterList ? "👀 View My Secret Result" : "📜 View Master List (Spoilers)"}
+        </button>
       )}
 
       {showResults ? (
         <ResultsView 
           players={players} 
           myPlayer={myPlayer} 
-          isHost={isHost} 
+          showMasterList={showMasterList} 
           isRevealed={isRevealed} 
-          showMasterList={showMasterList}
         />
       ) : (
         <GiftGrid 
@@ -56,7 +48,7 @@ function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePla
           onPick={actions.pickNumber} 
         />
       )}
-    </>
+    </div>
   );
 }
 

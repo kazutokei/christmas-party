@@ -1,7 +1,6 @@
 import React from 'react';
 
 function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
-  // If myPlayer is null, I am a spectator host
   const isSpectator = !myPlayer;
 
   return (
@@ -9,10 +8,10 @@ function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
       {players.map((_, i) => {
         const num = i + 1;
         const takenBy = players.find(p => p.picked_number === num);
-        
         const isMine = myPlayer && takenBy?.id === myPlayer.id;
         const isMyBrought = myPlayer && (num === myBroughtGift);
         
+        // Logic: Disable if taken, if it's my own gift, if not my turn, or if I'm just watching
         const disabled = !!takenBy || isMyBrought || !isMyTurn || isSpectator;
 
         return (
@@ -22,7 +21,13 @@ function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
             onClick={() => !disabled && onPick(num)} 
             disabled={disabled}
           >
-            {takenBy ? `🔒 ${takenBy.name}` : isMyBrought ? "🚫 MY GIFT" : `🎁 #${num}`}
+            {takenBy ? (
+              <span style={{fontSize:'0.8rem'}}>🔒<br/>{takenBy.name}</span>
+            ) : isMyBrought ? (
+              <span style={{fontSize:'0.7rem'}}>🚫<br/>MY GIFT</span>
+            ) : (
+              `🎁 #${num}`
+            )}
           </button>
         );
       })}

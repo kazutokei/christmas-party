@@ -2,32 +2,30 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { supabase } from './services/supabaseClient';
 import AuthScreen from './components/AuthScreen';
-import Home from './components/Home'; // We import the new file here
+import Home from './components/Home'; // We use the new file here
 import Lobby from './components/Lobby';
 import GameArea from './components/GameArea';
 
 function App() {
   const [session, setSession] = useState(null);
-  const [roomId, setRoomId] = useState(null); // This tracks if we are in a room or not
+  const [roomId, setRoomId] = useState(null); // Tracks if we are in a room
   
   // Room Data
   const [roomData, setRoomData] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [myParticipant, setMyParticipant] = useState(null);
 
-  // 1. Handle Login Session
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
     supabase.auth.onAuthStateChange((_event, session) => setSession(session));
   }, []);
 
-  // 2. Handle Room Updates (Only runs if we have a roomId)
+  // --- ROOM LISTENER ---
   useEffect(() => {
-    if (!roomId || !session) return;
+    if (!roomId || !session) return; // If no room selected, do nothing
 
     fetchRoomData();
 
-    // Listen for changes in THIS specific room
     const channel = supabase.channel(`room_${roomId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'participants', filter: `room_id=eq.${roomId}` }, () => {
         fetchParticipants();
@@ -65,7 +63,7 @@ function App() {
     setParticipants([]);
   };
 
-  // --- GAME ACTIONS ---
+  // --- ACTIONS ---
   const actions = {
     startGame: async () => {
       await supabase.from('rooms').update({ is_started: true, reveal_phase: false }).eq('id', roomId);
@@ -119,7 +117,7 @@ function App() {
         {!session ? (
           <AuthScreen />
         ) : !roomId ? (
-          /* THIS IS THE FIX: Show Home if we are logged in but NOT in a room yet */
+          /* SHOW HOME if we are logged in but NOT in a room yet */
           <Home session={session} onJoinRoom={setRoomId} />
         ) : !roomData ? (
           <div>Loading Room...</div>

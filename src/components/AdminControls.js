@@ -2,16 +2,22 @@ import React from 'react';
 
 function AdminControls({ isRevealed, actions }) {
   return (
-    <div className="admin-controls">
-      <p style={{marginTop:0, fontWeight:'bold', color:'#888'}}>HOST PANEL</p>
+    <div style={{background: '#fdfefe', padding: '15px', border: '2px solid #ecf0f1', borderRadius: '12px', marginBottom: '20px'}}>
+      <p style={{margin: '0 0 10px 0', fontSize: '0.8rem', fontWeight: 'bold', color: '#95a5a6', textTransform: 'uppercase'}}>Host Controls</p>
+      
       {!isRevealed ? (
-        <button className="btn-primary reveal-btn" onClick={actions.revealAll}>
-          🔓 FORCE REVEAL TO EVERYONE
+        <button className="btn-primary" onClick={actions.revealAll} style={{background: '#e67e22', border: 'none'}}>
+          🔓 REVEAL ALL RESULTS
         </button>
       ) : (
-        <div className="admin-banner">✅ RESULTS ARE LIVE!</div>
+        <div style={{padding: '10px', background: '#d5f5e3', color: '#27ae60', borderRadius: '8px', fontWeight: 'bold'}}>
+          ✅ RESULTS ARE LIVE
+        </div>
       )}
-      <button className="btn-secondary" onClick={actions.resetGame}>🔄 Reset Game</button>
+      
+      <button className="btn-secondary" onClick={actions.resetGame} style={{marginTop: '10px'}}>
+        🔄 Reset Game
+      </button>
     </div>
   );
 }
