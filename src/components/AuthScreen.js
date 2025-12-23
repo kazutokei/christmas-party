@@ -33,7 +33,7 @@ function AuthScreen() {
     <div className="auth-container">
       <div className="auth-card">
         <h1 className="hero-title">{isRegistering ? "Join the Party" : "Welcome Back"}</h1>
-        <p className="hero-subtitle">Sign in to start swapping gifts!</p>
+        <p className="hero-subtitle">Sign in to start exchanging gifts!</p>
         
         <form onSubmit={handleAuth}>
           <div className="input-group">
