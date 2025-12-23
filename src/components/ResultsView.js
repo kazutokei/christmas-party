@@ -9,9 +9,18 @@ function ResultsView({ players, myPlayer, isAdmin, isRevealed }) {
         {players.map((p) => {
           const giftNumber = p.picked_number;
           const gifter = giftNumber ? players[giftNumber - 1] : null; 
+          
           return (
             <div key={p.id} className="result-card festive-mode">
               <div className="picker-header">👤 <strong>{p.name}</strong></div>
+              
+              {/* Show Wishlist if available */}
+              {p.wishlist && (
+                <div style={{fontSize: '0.8rem', color: '#666', background: '#f9f9f9', padding: '5px', borderRadius: '5px', marginBottom: '10px'}}>
+                   📝 Wishlist: <em>{p.wishlist}</em>
+                </div>
+              )}
+
               <div className="funny-quote">
                 {gifter ? (
                   <>
@@ -40,15 +49,26 @@ function ResultsView({ players, myPlayer, isAdmin, isRevealed }) {
   }
 
   // Player View (Revealed Phase)
+  const myGiftPerson = myPlayer?.picked_number ? players[myPlayer.picked_number - 1] : null;
+
   return (
     <div className="result-card festive-mode scale-up">
        <h1 style={{fontSize: '1.5rem', color: '#888'}}>{APP_TEXT.revealHeader}</h1>
        <div className="funny-quote">
-          {myPlayer?.picked_number ? (
+          {myGiftPerson ? (
             <>
               <span className="target-name big-reveal">
-                {players[myPlayer.picked_number - 1]?.name || "Error"}
+                {myGiftPerson.name}
               </span>
+              
+              {/* Show the person's wishlist to YOU */}
+              {myGiftPerson.wishlist && (
+                <div style={{fontSize: '1rem', color: '#555', margin: '15px 0', border: '1px dashed #ccc', padding: '10px'}}>
+                   📝 Their Wishlist:<br/>
+                   <strong>{myGiftPerson.wishlist}</strong>
+                </div>
+              )}
+
               <br/>
               {APP_TEXT.revealQuote}
             </>

@@ -9,5 +9,10 @@ export const APP_TEXT = {
   secretBody: "Wait for the Host to reveal the results...",
   secretFooter: 'Neeeeeverrrrr dili mu-attend!',
   revealHeader: "IMONG NAPILIAN KAY SI......",
-  revealQuote: 'Neeeeeverrrrr dili mu-attend, dili mu-attend!'
+  revealQuote: 'Neeeeeverrrrr dili mu-attend, dili mu-attend!',
+
+// NEW LABELS
+  priceLabel: "Gift Price Rule:",
+  wishlistPlaceholder: "Type your wishlist here (e.g. Socks, Mug)...",
+  wishlistSaved: "Wishlist Saved!"
 };

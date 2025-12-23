@@ -11,10 +11,10 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
   const [myPlayer, setMyPlayer] = useState(null);
+  const [priceRule, setPriceRule] = useState(""); // NEW STATE
 
   const isAdmin = isUserAdmin(session?.user?.email);
   
-  // Logic Helpers
   const activePlayer = players.find(p => p.picked_number === null);
   const isMyTurn = activePlayer?.id === myPlayer?.id;
   const isGameOver = players.length > 0 && !activePlayer;
@@ -44,6 +44,7 @@ function App() {
     if (status) {
       setGameStarted(status.is_started);
       setIsRevealed(status.reveal_phase);
+      setPriceRule(status.price_rule || "Open Budget"); // NEW
     }
     
     supabase.channel('room1')
@@ -57,6 +58,7 @@ function App() {
         if (payload.new.id === 1) {
           setGameStarted(payload.new.is_started);
           setIsRevealed(payload.new.reveal_phase);
+          setPriceRule(payload.new.price_rule); // NEW
         }
       })
       .subscribe();
@@ -80,14 +82,23 @@ function App() {
     },
     resetGame: async () => {
       if (window.confirm("⚠️ WARNING: This will RESET everything. Are you sure?")) {
-        await supabase.from('game_state').update({ is_started: false, reveal_phase: false }).eq('id', 1);
-        await supabase.from('players').update({ picked_number: null }).gt('id', 0);
+        await supabase.from('game_state').update({ is_started: false, reveal_phase: false, price_rule: 'Open Budget' }).eq('id', 1);
+        await supabase.from('players').update({ picked_number: null, wishlist: null }).gt('id', 0);
       }
     },
     revealAll: async () => {
       if (window.confirm("Are you sure? This will show EVERYONE their results!")) {
         await supabase.from('game_state').update({ reveal_phase: true }).eq('id', 1);
       }
+    },
+    // NEW ACTION: Update Price
+    updatePriceRule: async (newRule) => {
+      await supabase.from('game_state').update({ price_rule: newRule }).eq('id', 1);
+    },
+    // NEW ACTION: Save Wishlist
+    saveWishlist: async (wishlistText) => {
+      if (!myPlayer) return;
+      await supabase.from('players').update({ wishlist: wishlistText }).eq('id', myPlayer.id);
     }
   };
 
@@ -109,7 +120,8 @@ function App() {
                   players={players} 
                   myPlayer={myPlayer} 
                   isAdmin={isAdmin} 
-                  actions={actions} 
+                  actions={actions}
+                  priceRule={priceRule} // NEW PROP
                 />
               ) : (
                 <GameArea 
