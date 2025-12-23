@@ -21,7 +21,7 @@ function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
             disabled={disabled}
           >
             {takenBy ? (
-              <span style={{fontSize:'0.7rem', textTransform:'uppercase'}}>Taken by<br/>{takenBy.name}</span>
+              <span style={{fontSize:'0.75rem', textTransform:'uppercase', color:'white', fontWeight:'bold'}}>Taken by<br/><span style={{fontSize:'0.9rem'}}>{takenBy.name}</span></span>
             ) : isMyBrought ? (
               <span style={{fontSize:'0.7rem', color:'#aaa'}}>YOUR<br/>GIFT</span>
             ) : (

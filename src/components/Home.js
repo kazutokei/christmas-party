@@ -89,29 +89,30 @@ function Home({ session, onJoinRoom }) {
         <hr style={{margin: '30px 0', borderTop: '1px solid #eee'}}/>
 
         {/* JOIN SECTION */}
-        <div style={{background: '#f9f9f9', padding: '20px', borderRadius: '12px', marginBottom: '20px'}}>
-          <h3>Enter a Room Code</h3>
-          <div style={{display: 'flex', gap: '10px'}}>
+        <div style={{background: '#f9f9f9', padding: '25px', borderRadius: '16px', marginBottom: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)'}}>
+          <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#34495e'}}>Enter a Room Code</h3>
+          <div className="modern-input-group">
             <input 
+              className="modern-input"
               placeholder="CODE" 
-              style={{textTransform: 'uppercase', fontWeight: 'bold'}}
               value={joinCode}
               onChange={e => setJoinCode(e.target.value)}
+              maxLength={6}
             />
-            <button className="btn-primary" onClick={handleJoinRoom} disabled={loading}>JOIN</button>
+            <button className="modern-btn" onClick={handleJoinRoom} disabled={loading}>JOIN</button>
           </div>
         </div>
 
-        <div style={{textAlign: 'center', color: '#888', fontWeight: 'bold', marginBottom: '20px'}}>- OR -</div>
+        <div style={{textAlign: 'center', color: '#888', fontWeight: 'bold', marginBottom: '20px', fontSize: '0.9rem'}}>- OR -</div>
 
         {/* CREATE SECTION */}
-        <div style={{border: '1px solid #4CAF50', padding: '20px', borderRadius: '12px', background: '#fcfdf9'}}>
-          <h3 style={{color: '#2E7D32', marginTop:0}}>Create New Lobby</h3>
-          <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px'}}>
-            <input type="checkbox" id="joinCheck" style={{width:'20px', height:'20px'}} checked={joinAsPlayer} onChange={e => setJoinAsPlayer(e.target.checked)} />
-            <label htmlFor="joinCheck" style={{cursor:'pointer', color:'#555'}}>I want to join as a player too</label>
+        <div style={{border: '2px dashed #4CAF50', padding: '20px', borderRadius: '16px', background: '#f1f8e9'}}>
+          <h3 style={{color: '#2E7D32', marginTop:0, textAlign: 'center'}}>Create New Lobby</h3>
+          <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px', justifyContent: 'center'}}>
+            <input type="checkbox" id="joinCheck" style={{width:'18px', height:'18px', accentColor: '#2E7D32'}} checked={joinAsPlayer} onChange={e => setJoinAsPlayer(e.target.checked)} />
+            <label htmlFor="joinCheck" style={{cursor:'pointer', color:'#555', fontWeight: '600', fontSize: '0.9rem'}}>I want to join as a player too</label>
           </div>
-          <button className="btn-primary" style={{width:'100%'}} onClick={handleCreateRoom} disabled={loading}>
+          <button className="btn-primary" style={{width:'100%', padding: '18px'}} onClick={handleCreateRoom} disabled={loading}>
              Create & Host
           </button>
         </div>

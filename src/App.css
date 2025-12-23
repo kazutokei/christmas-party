@@ -207,4 +207,66 @@ p.hero-subtitle { color: #7f8c8d; font-size: 1.1rem; margin-bottom: 30px; }
   .hero-image { max-width: 100%; }
   .text-section { width: 100%; }
   h1.hero-title { font-size: 2.8rem; }
+
+/* --- MODERN INPUT GROUP (for Home.js) --- */
+.modern-input-group {
+  display: flex;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 50px; /* Makes it pill-shaped */
+  padding: 5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.modern-input-group:focus-within {
+  border-color: #2E7D32;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+}
+
+.modern-input {
+  flex-grow: 1;
+  border: none;
+  padding: 15px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  background: transparent;
+  outline: none;
+  color: #2c3e50;
+}
+
+.modern-input::placeholder {
+  color: #ccc;
+  letter-spacing: 1px;
+}
+
+.modern-btn {
+  background: #2E7D32;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.modern-btn:hover {
+  background: #1B5E20;
+}
+
+.modern-btn:active {
+  transform: scale(0.98);
+}
+
+.modern-btn:disabled {
+  background: #a5d6a7;
+  cursor: not-allowed;
+}
+
+
 }
