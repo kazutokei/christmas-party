@@ -15,7 +15,6 @@ function Home({ session, onJoinRoom }) {
     const newCode = generateRoomCode();
     const userId = session.user.id;
 
-    // 1. Create Room
     const { data: room, error: roomError } = await supabase
       .from('rooms')
       .insert([{ code: newCode, host_id: userId }])
@@ -27,7 +26,6 @@ function Home({ session, onJoinRoom }) {
       return alert(roomError.message);
     }
 
-    // 2. Add Host as Participant (If checked)
     if (joinAsPlayer) {
       const { error: partError } = await supabase
         .from('participants')
@@ -49,7 +47,6 @@ function Home({ session, onJoinRoom }) {
     if (!joinCode) return alert("Enter a room code!");
     setLoading(true);
 
-    // 1. Find Room
     const { data: room, error: findError } = await supabase
       .from('rooms')
       .select('*')
@@ -61,8 +58,6 @@ function Home({ session, onJoinRoom }) {
       return alert("Room not found! Check the code.");
     }
 
-    // 2. Add Player to Room
-    // Check if already joined first to avoid duplicates
     const { data: existing } = await supabase.from('participants').select('*').eq('room_id', room.id).eq('user_id', session.user.id).single();
 
     if (!existing) {
@@ -83,7 +78,7 @@ function Home({ session, onJoinRoom }) {
   return (
     <div className="auth-container">
       <div className="auth-card" style={{maxWidth: '500px'}}>
-        <h1 className="hero-title">Welcome! 👋</h1>
+        <h1 className="hero-title">Welcome</h1>
         <p className="hero-subtitle">What would you like to do?</p>
         
         <div className="input-group">
@@ -110,14 +105,14 @@ function Home({ session, onJoinRoom }) {
         <div style={{textAlign: 'center', color: '#888', fontWeight: 'bold', marginBottom: '20px'}}>- OR -</div>
 
         {/* CREATE SECTION */}
-        <div style={{border: '2px solid #6B8E23', padding: '20px', borderRadius: '12px', background: '#fcfdf9'}}>
-          <h3 style={{color: '#6B8E23', marginTop:0}}>Create New Lobby</h3>
+        <div style={{border: '1px solid #4CAF50', padding: '20px', borderRadius: '12px', background: '#fcfdf9'}}>
+          <h3 style={{color: '#2E7D32', marginTop:0}}>Create New Lobby</h3>
           <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px'}}>
             <input type="checkbox" id="joinCheck" style={{width:'20px', height:'20px'}} checked={joinAsPlayer} onChange={e => setJoinAsPlayer(e.target.checked)} />
             <label htmlFor="joinCheck" style={{cursor:'pointer', color:'#555'}}>I want to join as a player too</label>
           </div>
           <button className="btn-primary" style={{width:'100%'}} onClick={handleCreateRoom} disabled={loading}>
-            ✨ Create & Host
+             Create & Host
           </button>
         </div>
       </div>

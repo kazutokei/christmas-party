@@ -10,13 +10,13 @@ function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePla
 
   return (
     <div className="game-card">
-      <div className="status-bar">
+      <div className="status-bar" style={{marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #eee'}}>
         {showResults ? (
           <h2 style={{margin:0, color:'#c0392b'}}>{isRevealed ? APP_TEXT.christmasTitle : APP_TEXT.revealTitle}</h2>
         ) : activePlayer ? (
           isMyTurn ? 
-          <h2 style={{margin:0, color:'#27ae60'}}>✨ IT'S YOUR TURN! ✨</h2> : 
-          <h2 style={{margin:0, color:'#7f8c8d'}}>⏳ Waiting for {activePlayer.name}...</h2>
+          <h2 style={{margin:0, color:'#2E7D32'}}>IT'S YOUR TURN!</h2> : 
+          <h2 style={{margin:0, color:'#7f8c8d'}}>Waiting for {activePlayer.name}...</h2>
         ) : null}
       </div>
 
@@ -28,7 +28,7 @@ function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePla
           style={{marginBottom: '20px', fontSize: '0.8rem'}}
           onClick={() => setShowMasterList(!showMasterList)}
         >
-          {showMasterList ? "👀 View My Secret Result" : "📜 View Master List (Spoilers)"}
+          {showMasterList ? "View My Secret Result" : "View Master List (Spoilers)"}
         </button>
       )}
 
