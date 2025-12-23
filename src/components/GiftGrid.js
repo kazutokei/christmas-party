@@ -1,14 +1,19 @@
 import React from 'react';
 
 function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
+  // If myPlayer is null, I am a spectator host
+  const isSpectator = !myPlayer;
+
   return (
     <div className="grid-container">
       {players.map((_, i) => {
         const num = i + 1;
         const takenBy = players.find(p => p.picked_number === num);
-        const isMine = takenBy?.id === myPlayer?.id;
-        const isMyBrought = (num === myBroughtGift);
-        const disabled = !!takenBy || isMyBrought || !isMyTurn;
+        
+        const isMine = myPlayer && takenBy?.id === myPlayer.id;
+        const isMyBrought = myPlayer && (num === myBroughtGift);
+        
+        const disabled = !!takenBy || isMyBrought || !isMyTurn || isSpectator;
 
         return (
           <button 

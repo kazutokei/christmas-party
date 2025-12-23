@@ -1,135 +1,143 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { supabase, isUserAdmin } from './services/supabaseClient';
+import { supabase } from './services/supabaseClient';
 import AuthScreen from './components/AuthScreen';
+import Home from './components/Home'; // We are importing the new file here
 import Lobby from './components/Lobby';
 import GameArea from './components/GameArea';
 
 function App() {
   const [session, setSession] = useState(null);
-  const [players, setPlayers] = useState([]);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [myPlayer, setMyPlayer] = useState(null);
-  const [priceRule, setPriceRule] = useState(""); // NEW STATE
-
-  const isAdmin = isUserAdmin(session?.user?.email);
+  const [roomId, setRoomId] = useState(null); 
   
-  const activePlayer = players.find(p => p.picked_number === null);
-  const isMyTurn = activePlayer?.id === myPlayer?.id;
-  const isGameOver = players.length > 0 && !activePlayer;
-  const myBroughtGift = myPlayer ? players.findIndex(p => p.id === myPlayer.id) + 1 : -1;
+  // Room Data
+  const [roomData, setRoomData] = useState(null);
+  const [participants, setParticipants] = useState([]);
+  const [myParticipant, setMyParticipant] = useState(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) fetchInitialData(session.user.id);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) fetchInitialData(session.user.id);
-    });
-
-    return () => subscription.unsubscribe();
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+    supabase.auth.onAuthStateChange((_event, session) => setSession(session));
   }, []);
 
-  const fetchInitialData = async (userId) => {
-    const { data: playerList } = await supabase.from('players').select('*').order('id', { ascending: true });
-    if (playerList) {
-      setPlayers(playerList);
-      setMyPlayer(playerList.find(p => p.user_id === userId));
-    }
-    const { data: status } = await supabase.from('game_state').select('*').eq('id', 1).single();
-    if (status) {
-      setGameStarted(status.is_started);
-      setIsRevealed(status.reveal_phase);
-      setPriceRule(status.price_rule || "Open Budget"); // NEW
-    }
-    
-    supabase.channel('room1')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'players' }, () => {
-        supabase.from('players').select('*').order('id', { ascending: true }).then(({ data }) => {
-          setPlayers(data);
-          setMyPlayer(data.find(p => p.user_id === userId));
-        });
+  // --- ROOM LISTENER ---
+  useEffect(() => {
+    if (!roomId || !session) return;
+
+    fetchRoomData();
+
+    const channel = supabase.channel(`room_${roomId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'participants', filter: `room_id=eq.${roomId}` }, () => {
+        fetchParticipants();
       })
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'game_state' }, (payload) => {
-        if (payload.new.id === 1) {
-          setGameStarted(payload.new.is_started);
-          setIsRevealed(payload.new.reveal_phase);
-          setPriceRule(payload.new.price_rule); // NEW
-        }
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` }, (payload) => {
+        setRoomData(payload.new);
       })
       .subscribe();
+
+    return () => supabase.removeChannel(channel);
+    // eslint-disable-next-line
+  }, [roomId, session]);
+
+  const fetchRoomData = async () => {
+    const { data: r } = await supabase.from('rooms').select('*').eq('id', roomId).single();
+    setRoomData(r);
+    fetchParticipants();
+  };
+
+  const fetchParticipants = async () => {
+    const { data: p } = await supabase.from('participants').select('*').eq('room_id', roomId).order('joined_at', { ascending: true });
+    setParticipants(p);
+    const me = p.find(user => user.user_id === session.user.id);
+    setMyParticipant(me);
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setSession(null); setMyPlayer(null);
+    setSession(null); setRoomId(null);
   };
 
+  const handleLeaveRoom = () => {
+    setRoomId(null);
+    setRoomData(null);
+    setParticipants([]);
+  };
+
+  // --- ACTIONS ---
   const actions = {
-    pickNumber: async (number) => {
-      if (isAdmin) return alert("Hosts don't pick gifts!");
-      if (!myPlayer) return alert("You are not a registered player.");
-      if (activePlayer?.id !== myPlayer?.id) return alert("Wait your turn!");
-      if (players.some(p => p.picked_number === number)) return alert("Taken!");
-      await supabase.from('players').update({ picked_number: number }).eq('id', myPlayer.id);
-    },
     startGame: async () => {
-      await supabase.from('game_state').update({ is_started: true, reveal_phase: false }).eq('id', 1);
+      await supabase.from('rooms').update({ is_started: true, reveal_phase: false }).eq('id', roomId);
     },
-    resetGame: async () => {
-      if (window.confirm("⚠️ WARNING: This will RESET everything. Are you sure?")) {
-        await supabase.from('game_state').update({ is_started: false, reveal_phase: false, price_rule: 'Open Budget' }).eq('id', 1);
-        await supabase.from('players').update({ picked_number: null, wishlist: null }).gt('id', 0);
-      }
+    updatePriceRule: async (val) => {
+      await supabase.from('rooms').update({ price_rule: val }).eq('id', roomId);
+    },
+    saveWishlist: async (val) => {
+      await supabase.from('participants').update({ wishlist: val }).eq('id', myParticipant.id);
+    },
+    pickNumber: async (num) => {
+       const active = participants.find(p => p.picked_number === null);
+       if (active?.id !== myParticipant?.id) return alert("Wait your turn!");
+       if (participants.some(p => p.picked_number === num)) return alert("Taken!");
+       await supabase.from('participants').update({ picked_number: num }).eq('id', myParticipant.id);
     },
     revealAll: async () => {
-      if (window.confirm("Are you sure? This will show EVERYONE their results!")) {
-        await supabase.from('game_state').update({ reveal_phase: true }).eq('id', 1);
+      if (window.confirm("Show results?")) {
+        await supabase.from('rooms').update({ reveal_phase: true }).eq('id', roomId);
       }
     },
-    // NEW ACTION: Update Price
-    updatePriceRule: async (newRule) => {
-      await supabase.from('game_state').update({ price_rule: newRule }).eq('id', 1);
-    },
-    // NEW ACTION: Save Wishlist
-    saveWishlist: async (wishlistText) => {
-      if (!myPlayer) return;
-      await supabase.from('players').update({ wishlist: wishlistText }).eq('id', myPlayer.id);
+    resetGame: async () => {
+      if (window.confirm("Reset everything?")) {
+        await supabase.from('rooms').update({ is_started: false, reveal_phase: false, price_rule: 'Open Budget' }).eq('id', roomId);
+        await supabase.from('participants').update({ picked_number: null }).eq('room_id', roomId);
+      }
     }
   };
+
+  // Derived State
+  const isHost = roomData?.host_id === session?.user?.id;
+  const activePlayer = participants.find(p => p.picked_number === null);
+  const isMyTurn = activePlayer?.id === myParticipant?.id;
+  const isGameOver = participants.length > 0 && !activePlayer;
+  const myBroughtGift = myParticipant ? participants.findIndex(p => p.id === myParticipant.id) + 1 : -1;
 
   return (
     <div className="App">
       <nav className="navbar">
         <img src="/logo.png" alt="Logo" className="logo-image" />
-        {session && <button className="logout" onClick={handleLogout}>Log Out</button>}
+        {session && (
+          <div style={{display:'flex', gap:'10px'}}>
+             {roomId && <button className="logout" onClick={handleLeaveRoom}>Leave Room</button>}
+             <button className="logout" onClick={handleLogout}>Log Out</button>
+          </div>
+        )}
       </nav>
 
       <div className="main-content">
         {!session ? (
           <AuthScreen />
+        ) : !roomId ? (
+          <Home session={session} onJoinRoom={setRoomId} />
+        ) : !roomData ? (
+          <div>Loading Room...</div>
         ) : (
           <>
             <div className="text-section">
-              {!gameStarted ? (
+              {!roomData.is_started ? (
                 <Lobby 
-                  players={players} 
-                  myPlayer={myPlayer} 
-                  isAdmin={isAdmin} 
+                  roomCode={roomData.code}
+                  players={participants} 
+                  myPlayer={myParticipant} 
+                  isHost={isHost} 
                   actions={actions}
-                  priceRule={priceRule} // NEW PROP
+                  priceRule={roomData.price_rule}
                 />
               ) : (
                 <GameArea 
-                  players={players} 
-                  myPlayer={myPlayer} 
-                  isAdmin={isAdmin}
+                  players={participants} 
+                  myPlayer={myParticipant} 
+                  isHost={isHost}
                   isGameOver={isGameOver}
-                  isRevealed={isRevealed}
+                  isRevealed={roomData.reveal_phase}
                   activePlayer={activePlayer}
                   isMyTurn={isMyTurn}
                   myBroughtGift={myBroughtGift}

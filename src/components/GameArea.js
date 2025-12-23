@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { APP_TEXT } from '../config';
 import AdminControls from './AdminControls';
 import GiftGrid from './GiftGrid';
 import ResultsView from './ResultsView';
 
-function GameArea({ players, myPlayer, isAdmin, isGameOver, isRevealed, activePlayer, isMyTurn, myBroughtGift, actions }) {
+function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePlayer, isMyTurn, myBroughtGift, actions }) {
   const showResults = isGameOver || isRevealed;
+  
+  // Default to showing Master List if I'm NOT playing (just hosting). 
+  // If I AM playing, default to hiding it (Player View) so I don't spoil myself.
+  const [showMasterList, setShowMasterList] = useState(!myPlayer);
 
   return (
     <>
@@ -19,16 +23,30 @@ function GameArea({ players, myPlayer, isAdmin, isGameOver, isRevealed, activePl
         ) : null}
       </div>
 
-      {isAdmin && (
+      {isHost && (
         <AdminControls isRevealed={isRevealed} actions={actions} />
+      )}
+
+      {/* Host Toggle: Only show if I am a Host AND a Player AND results are out */}
+      {isHost && showResults && myPlayer && (
+        <div style={{marginBottom: '20px', textAlign: 'center'}}>
+          <button 
+            className="btn-secondary" 
+            style={{background: showMasterList ? '#333' : '#eee', color: showMasterList ? 'white' : '#333', fontSize:'0.9rem'}}
+            onClick={() => setShowMasterList(!showMasterList)}
+          >
+            {showMasterList ? "👀 Switch to Player View" : "📜 Switch to Master List (Spoilers!)"}
+          </button>
+        </div>
       )}
 
       {showResults ? (
         <ResultsView 
           players={players} 
           myPlayer={myPlayer} 
-          isAdmin={isAdmin} 
+          isHost={isHost} 
           isRevealed={isRevealed} 
+          showMasterList={showMasterList}
         />
       ) : (
         <GiftGrid 
