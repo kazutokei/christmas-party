@@ -81,7 +81,7 @@ function App() {
     setMyParticipant(null);
   };
 
-  // --- ACTIONS ---
+  // --- ACTIONS (ALL ALERTS REPLACED HERE) ---
   const actions = {
     startGame: async () => {
       await supabase.from('rooms').update({ is_started: true, reveal_phase: false }).eq('id', roomId);
@@ -93,10 +93,12 @@ function App() {
     },
     saveWishlist: async (val) => {
       await supabase.from('participants').update({ wishlist: val }).eq('id', myParticipant.id);
+      // No alert here, logic handled in Lobby with text change
     },
     pickNumber: async (num) => {
        const active = participants.find(p => p.picked_number === null);
        
+       // Replaced standard alerts with Toasts
        if (active?.id !== myParticipant?.id) return showToast("Wait your turn!", "warning");
        if (participants.some(p => p.picked_number === num)) return showToast("That number is already taken!", "error");
        
@@ -104,6 +106,7 @@ function App() {
        showToast(`You picked #${num}!`, "success");
     },
     revealAll: async () => {
+      // Replaced window.confirm with branded showConfirm
       const confirmed = await showConfirm(
         "Reveal Results?", 
         "This will show everyone who got who. There is no going back!"
@@ -114,6 +117,7 @@ function App() {
       }
     },
     resetGame: async () => {
+      // Replaced window.confirm with branded showConfirm
       const confirmed = await showConfirm(
         "Reset Game?", 
         "This will clear all picked numbers and restart the lobby. Are you sure?",

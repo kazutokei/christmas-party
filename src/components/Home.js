@@ -10,6 +10,7 @@ function Home({ session, onJoinRoom }) {
 
   // --- CREATE A NEW ROOM ---
   const handleCreateRoom = async () => {
+    // Replaced alert with Toast
     if (joinAsPlayer && !displayName) return showToast("Please enter your name to play!", "warning");
     
     setLoading(true);
@@ -46,6 +47,7 @@ function Home({ session, onJoinRoom }) {
 
   // --- JOIN AN EXISTING ROOM ---
   const handleJoinRoom = async () => {
+    // Replaced alerts with Toasts
     if (!displayName) return showToast("Please enter your name!", "warning");
     if (!joinCode) return showToast("Enter a room code!", "warning");
     setLoading(true);

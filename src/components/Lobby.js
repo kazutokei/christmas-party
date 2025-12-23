@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { APP_TEXT } from '../config';
-import { showToast } from '../services/alertService'; // <--- ADDED IMPORT
+import { showToast } from '../services/alertService';
 
 function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
   const [newPrice, setNewPrice] = useState("");
@@ -8,7 +8,7 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
   const [isSaved, setIsSaved] = useState(false);
 
   const handleSetPrice = () => {
-    // UPDATED: Now shows a warning instead of failing silently
+    // Shows a toast if empty, instead of doing nothing
     if(!newPrice) return showToast("Please enter a budget amount", "warning");
     
     actions.updatePriceRule(newPrice);
@@ -18,8 +18,6 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
   const handleSaveWishlist = () => {
     actions.saveWishlist(myWishlist);
     setIsSaved(true);
-    // Optional: You could also add a toast here if you want
-    // showToast("Wishlist saved!", "success");
     setTimeout(() => setIsSaved(false), 2000);
   };
 
