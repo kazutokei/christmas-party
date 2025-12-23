@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { supabase } from './services/supabaseClient';
 import AuthScreen from './components/AuthScreen';
-import Home from './components/Home'; // We use the new file here
+import Home from './components/Home';
 import Lobby from './components/Lobby';
 import GameArea from './components/GameArea';
 
@@ -17,7 +17,11 @@ function App() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // --- ROOM LISTENER ---
@@ -26,41 +30,54 @@ function App() {
 
     fetchRoomData();
 
-    const channel = supabase.channel(`room_${roomId}`)
+    // Listen for changes in participants (joins, picks, etc.)
+    const participantChannel = supabase.channel(`participants_${roomId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'participants', filter: `room_id=eq.${roomId}` }, () => {
         fetchParticipants();
       })
+      .subscribe();
+
+    // Listen for changes in room state (start game, reveal, price rule)
+    const roomChannel = supabase.channel(`room_state_${roomId}`)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` }, (payload) => {
         setRoomData(payload.new);
       })
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => {
+      supabase.removeChannel(participantChannel);
+      supabase.removeChannel(roomChannel);
+    };
     // eslint-disable-next-line
   }, [roomId, session]);
 
   const fetchRoomData = async () => {
     const { data: r } = await supabase.from('rooms').select('*').eq('id', roomId).single();
-    setRoomData(r);
+    if (r) setRoomData(r);
     fetchParticipants();
   };
 
   const fetchParticipants = async () => {
     const { data: p } = await supabase.from('participants').select('*').eq('room_id', roomId).order('joined_at', { ascending: true });
-    setParticipants(p);
-    const me = p.find(user => user.user_id === session.user.id);
-    setMyParticipant(me);
+    if (p) {
+      setParticipants(p);
+      const me = p.find(user => user.user_id === session.user.id);
+      setMyParticipant(me);
+    }
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setSession(null); setRoomId(null);
+    setSession(null); 
+    setRoomId(null);
+    setRoomData(null);
   };
 
   const handleLeaveRoom = () => {
     setRoomId(null);
     setRoomData(null);
     setParticipants([]);
+    setMyParticipant(null);
   };
 
   // --- ACTIONS ---
@@ -77,16 +94,17 @@ function App() {
     pickNumber: async (num) => {
        const active = participants.find(p => p.picked_number === null);
        if (active?.id !== myParticipant?.id) return alert("Wait your turn!");
-       if (participants.some(p => p.picked_number === num)) return alert("Taken!");
+       if (participants.some(p => p.picked_number === num)) return alert("That number is already taken!");
+       
        await supabase.from('participants').update({ picked_number: num }).eq('id', myParticipant.id);
     },
     revealAll: async () => {
-      if (window.confirm("Show results?")) {
+      if (window.confirm("Are you sure you want to reveal the results to everyone?")) {
         await supabase.from('rooms').update({ reveal_phase: true }).eq('id', roomId);
       }
     },
     resetGame: async () => {
-      if (window.confirm("Reset everything?")) {
+      if (window.confirm("This will reset the game for everyone. Continue?")) {
         await supabase.from('rooms').update({ is_started: false, reveal_phase: false, price_rule: 'Open Budget' }).eq('id', roomId);
         await supabase.from('participants').update({ picked_number: null }).eq('room_id', roomId);
       }
@@ -95,16 +113,18 @@ function App() {
 
   // Derived State
   const isHost = roomData?.host_id === session?.user?.id;
-  const activePlayer = participants.find(p => p.picked_number === null);
+  const activePlayer = participants.find(p => p.picked_number === null); // The first person who hasn't picked yet
   const isMyTurn = activePlayer?.id === myParticipant?.id;
-  const isGameOver = participants.length > 0 && !activePlayer;
+  const isGameOver = participants.length > 0 && !activePlayer; // Everyone has picked
   const myBroughtGift = myParticipant ? participants.findIndex(p => p.id === myParticipant.id) + 1 : -1;
 
   // --- RENDER ---
   return (
     <div className="App">
       <nav className="navbar">
-        <img src="/logo.png" alt="Logo" className="logo-image" />
+        {/* Make sure you have a logo.png in public folder, or remove this line */}
+        <img src="/logo.png" alt="Logo" className="logo-image" onError={(e) => e.target.style.display='none'} />
+        
         {session && (
           <div style={{display:'flex', gap:'10px'}}>
              {roomId && <button className="logout" onClick={handleLeaveRoom}>Leave Room</button>}
@@ -115,13 +135,32 @@ function App() {
 
       <div className="main-content">
         {!session ? (
-          <AuthScreen />
+          /* 1. NOT LOGGED IN */
+          <>
+            <div className="text-section">
+              <AuthScreen />
+            </div>
+            <div className="image-section">
+               {/* UPDATED TO PNG */}
+               <img src="/cat-gift.png" alt="Christmas Cat" className="hero-image"/>
+            </div>
+          </>
         ) : !roomId ? (
-          /* SHOW HOME if we are logged in but NOT in a room yet */
-          <Home session={session} onJoinRoom={setRoomId} />
+          /* 2. LOGGED IN, NO ROOM SELECTED */
+          <>
+            <div className="text-section">
+              <Home session={session} onJoinRoom={setRoomId} />
+            </div>
+            <div className="image-section">
+               {/* UPDATED TO PNG */}
+               <img src="/cat-gift.png" alt="Christmas Cat" className="hero-image"/>
+            </div>
+          </>
         ) : !roomData ? (
-          <div>Loading Room...</div>
+          /* 3. LOADING ROOM DATA */
+          <div style={{color:'white', fontSize:'1.5rem', fontWeight:'bold'}}>Loading Party...</div>
         ) : (
+          /* 4. INSIDE A ROOM (LOBBY or GAME) */
           <>
             <div className="text-section">
               {!roomData.is_started ? (
@@ -147,7 +186,12 @@ function App() {
                 />
               )}
             </div>
-            <div className="image-section"><img src="/side-image.png" alt="Gift" className="hero-image"/></div>
+            
+            {/* The Side Image - Always visible on the side now */}
+            <div className="image-section">
+               {/* UPDATED TO PNG */}
+               <img src="/cat-gift.png" alt="Christmas Cat" className="hero-image"/>
+            </div>
           </>
         )}
       </div>
