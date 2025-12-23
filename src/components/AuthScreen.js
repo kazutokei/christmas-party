@@ -30,7 +30,7 @@ function AuthScreen() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1 className="auth-title">{isRegistering ? "Join Party 🎄" : "Welcome Back 🎅"}</h1>
+        <h1 className="auth-title">{isRegistering ? "Join Party" : "Welcome Back"}</h1>
         <form onSubmit={handleAuth}>
           {isRegistering && <div className="input-group"><label>Name</label><input value={displayName} onChange={e => setDisplayName(e.target.value)} /></div>}
           <div className="input-group"><label>Email</label><input type="email" value={email} onChange={e => setEmail(e.target.value)} /></div>
