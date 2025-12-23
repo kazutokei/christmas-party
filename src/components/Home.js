@@ -15,6 +15,7 @@ function Home({ session, onJoinRoom }) {
     const newCode = generateRoomCode();
     const userId = session.user.id;
 
+    // 1. Create Room
     const { data: room, error: roomError } = await supabase
       .from('rooms')
       .insert([{ code: newCode, host_id: userId }])
@@ -26,6 +27,7 @@ function Home({ session, onJoinRoom }) {
       return alert(roomError.message);
     }
 
+    // 2. Add Host as Participant (If checked)
     if (joinAsPlayer) {
       const { error: partError } = await supabase
         .from('participants')
@@ -47,6 +49,7 @@ function Home({ session, onJoinRoom }) {
     if (!joinCode) return alert("Enter a room code!");
     setLoading(true);
 
+    // 1. Find Room
     const { data: room, error: findError } = await supabase
       .from('rooms')
       .select('*')
@@ -58,6 +61,8 @@ function Home({ session, onJoinRoom }) {
       return alert("Room not found! Check the code.");
     }
 
+    // 2. Add Player to Room
+    // Check if already joined first to avoid duplicates
     const { data: existing } = await supabase.from('participants').select('*').eq('room_id', room.id).eq('user_id', session.user.id).single();
 
     if (!existing) {
@@ -77,7 +82,7 @@ function Home({ session, onJoinRoom }) {
 
   return (
     <div className="auth-container">
-      <div className="auth-card" style={{maxWidth: '500px'}}>
+      <div className="auth-card" style={{maxWidth: '550px'}}> {/* Slightly wider for the new buttons */}
         <h1 className="hero-title">Welcome</h1>
         <p className="hero-subtitle">What would you like to do?</p>
         
@@ -88,13 +93,14 @@ function Home({ session, onJoinRoom }) {
 
         <hr style={{margin: '30px 0', borderTop: '1px solid #eee'}}/>
 
-        {/* JOIN SECTION */}
-        <div style={{background: '#f9f9f9', padding: '25px', borderRadius: '16px', marginBottom: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)'}}>
-          <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#34495e'}}>Enter a Room Code</h3>
+        {/* JOIN SECTION - UPDATED LAYOUT */}
+        <div style={{background: '#fcfcfc', padding: '30px', borderRadius: '20px', marginBottom: '20px', border: '1px solid #f0f0f0'}}>
+          <h3 style={{textAlign: 'center', marginBottom: '20px', color: '#34495e', fontSize: '1.2rem'}}>Enter a Room Code</h3>
+          
           <div className="modern-input-group">
             <input 
               className="modern-input"
-              placeholder="CODE" 
+              placeholder="ENTER CODE" 
               value={joinCode}
               onChange={e => setJoinCode(e.target.value)}
               maxLength={6}
@@ -103,7 +109,7 @@ function Home({ session, onJoinRoom }) {
           </div>
         </div>
 
-        <div style={{textAlign: 'center', color: '#888', fontWeight: 'bold', marginBottom: '20px', fontSize: '0.9rem'}}>- OR -</div>
+        <div style={{textAlign: 'center', color: '#ccc', fontWeight: 'bold', marginBottom: '20px', fontSize: '0.9rem'}}>- OR -</div>
 
         {/* CREATE SECTION */}
         <div style={{border: '2px dashed #4CAF50', padding: '20px', borderRadius: '16px', background: '#f1f8e9'}}>
