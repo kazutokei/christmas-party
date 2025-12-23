@@ -1,3 +1,4 @@
+// File: src/services/alertService.js
 import Swal from 'sweetalert2';
 
 // YOUR BRAND COLORS
@@ -8,7 +9,7 @@ const COLORS = {
   text: '#2c3e50'     // Dark Grey
 };
 
-// 1. Success Message (Big Modal)
+// 1. Success Message
 export const showSuccess = (title, text) => {
   return Swal.fire({
     title: title,
@@ -23,7 +24,7 @@ export const showSuccess = (title, text) => {
   });
 };
 
-// 2. Error Message (Big Modal)
+// 2. Error Message
 export const showError = (title, text) => {
   return Swal.fire({
     title: title || 'Oops!',
@@ -38,7 +39,7 @@ export const showError = (title, text) => {
   });
 };
 
-// 3. Confirmation Dialog (For Reset/Reveal)
+// 3. Confirmation Dialog
 export const showConfirm = async (title, text, confirmText = 'Yes, do it!') => {
   const result = await Swal.fire({
     title: title,
@@ -57,12 +58,11 @@ export const showConfirm = async (title, text, confirmText = 'Yes, do it!') => {
   return result.isConfirmed;
 };
 
-// 4. Toast Notification (Small popup in top corner)
-// Use this for minor warnings like "Wait your turn" or "Saved"
+// 4. Toast Notification
 export const showToast = (title, icon = 'success') => {
   const Toast = Swal.mixin({
     toast: true,
-    position: 'top-end', // Top Right
+    position: 'top-end', 
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true,
