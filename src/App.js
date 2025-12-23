@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { supabase } from './services/supabaseClient';
 import AuthScreen from './components/AuthScreen';
-import Home from './components/Home'; // We are importing the new file here
+import Home from './components/Home'; // THIS IS THE KEY IMPORT
 import Lobby from './components/Lobby';
 import GameArea from './components/GameArea';
 
@@ -22,6 +22,7 @@ function App() {
 
   // --- ROOM LISTENER ---
   useEffect(() => {
+    // Only fetch data if we are actually INSIDE a room (roomId is set)
     if (!roomId || !session) return;
 
     fetchRoomData();
@@ -116,6 +117,7 @@ function App() {
         {!session ? (
           <AuthScreen />
         ) : !roomId ? (
+          /* THIS SHOWS THE HOME SCREEN IF NO ROOM IS SELECTED */
           <Home session={session} onJoinRoom={setRoomId} />
         ) : !roomData ? (
           <div>Loading Room...</div>
