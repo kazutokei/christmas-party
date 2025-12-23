@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../services/supabaseClient';
+import { showSuccess, showError } from '../services/alertService';
 
 function AuthScreen() {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -10,14 +11,20 @@ function AuthScreen() {
   const handleAuth = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     if (isRegistering) {
       const { error } = await supabase.auth.signUp({ email, password });
-      if (error) alert(error.message);
-      else alert("Account created! You can now log in.");
+      if (error) {
+        showError("Registration Failed", error.message);
+      } else {
+        showSuccess("Account Created!", "You can now log in with your credentials.");
+      }
       setLoading(false);
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) alert("Login Failed: " + error.message);
+      if (error) {
+        showError("Login Failed", "Incorrect email or password. Please try again.");
+      }
       setLoading(false);
     }
   };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase, generateRoomCode } from '../services/supabaseClient';
+import { showError, showToast } from '../services/alertService';
 
 function Home({ session, onJoinRoom }) {
   const [joinCode, setJoinCode] = useState('');
@@ -9,7 +10,7 @@ function Home({ session, onJoinRoom }) {
 
   // --- CREATE A NEW ROOM ---
   const handleCreateRoom = async () => {
-    if (joinAsPlayer && !displayName) return alert("Please enter your name to play!");
+    if (joinAsPlayer && !displayName) return showToast("Please enter your name to play!", "warning");
     
     setLoading(true);
     const newCode = generateRoomCode();
@@ -24,7 +25,7 @@ function Home({ session, onJoinRoom }) {
 
     if (roomError) {
       setLoading(false);
-      return alert(roomError.message);
+      return showError("Error Creating Room", roomError.message);
     }
 
     // 2. Add Host as Participant (If checked)
@@ -35,7 +36,7 @@ function Home({ session, onJoinRoom }) {
 
       if (partError) {
         setLoading(false);
-        return alert(partError.message);
+        return showError("Error Joining", partError.message);
       }
     }
 
@@ -45,8 +46,8 @@ function Home({ session, onJoinRoom }) {
 
   // --- JOIN AN EXISTING ROOM ---
   const handleJoinRoom = async () => {
-    if (!displayName) return alert("Please enter your name!");
-    if (!joinCode) return alert("Enter a room code!");
+    if (!displayName) return showToast("Please enter your name!", "warning");
+    if (!joinCode) return showToast("Enter a room code!", "warning");
     setLoading(true);
 
     // 1. Find Room
@@ -58,7 +59,7 @@ function Home({ session, onJoinRoom }) {
 
     if (findError || !room) {
       setLoading(false);
-      return alert("Room not found! Check the code.");
+      return showError("Room Not Found", "Check the code and try again.");
     }
 
     // 2. Add Player to Room
@@ -72,7 +73,7 @@ function Home({ session, onJoinRoom }) {
 
       if (joinError) {
         setLoading(false);
-        return alert(joinError.message);
+        return showError("Join Failed", joinError.message);
       }
     }
 
@@ -82,7 +83,7 @@ function Home({ session, onJoinRoom }) {
 
   return (
     <div className="auth-container">
-      <div className="auth-card" style={{maxWidth: '550px'}}> {/* Slightly wider for the new buttons */}
+      <div className="auth-card" style={{maxWidth: '550px'}}>
         <h1 className="hero-title">Welcome</h1>
         <p className="hero-subtitle">What would you like to do?</p>
         
@@ -93,7 +94,7 @@ function Home({ session, onJoinRoom }) {
 
         <hr style={{margin: '30px 0', borderTop: '1px solid #eee'}}/>
 
-        {/* JOIN SECTION - UPDATED LAYOUT */}
+        {/* JOIN SECTION */}
         <div style={{background: '#fcfcfc', padding: '30px', borderRadius: '20px', marginBottom: '20px', border: '1px solid #f0f0f0'}}>
           <h3 style={{textAlign: 'center', marginBottom: '20px', color: '#34495e', fontSize: '1.2rem'}}>Enter a Room Code</h3>
           
