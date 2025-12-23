@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { APP_TEXT } from '../config';
 import AdminControls from './AdminControls';
 import GiftGrid from './GiftGrid';
@@ -6,7 +6,17 @@ import ResultsView from './ResultsView';
 
 function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePlayer, isMyTurn, myBroughtGift, actions }) {
   const showResults = isGameOver || isRevealed;
-  const [showMasterList, setShowMasterList] = useState(!myPlayer);
+  
+  // FIX: Default to false. Only change it if we are sure.
+  const [showMasterList, setShowMasterList] = useState(false);
+
+  // OPTIONAL: If you want Spectators (people not playing) to see the results automatically:
+  useEffect(() => {
+    // If I exist (I am playing), hide master list. If I am null (Spectator), show it.
+    if (myPlayer) {
+      setShowMasterList(false);
+    } 
+  }, [myPlayer]);
 
   return (
     <div className="game-card">
@@ -22,6 +32,7 @@ function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePla
 
       {isHost && <AdminControls isRevealed={isRevealed} actions={actions} />}
 
+      {/* ONLY HOST CAN SEE THIS TOGGLE BUTTON */}
       {isHost && showResults && myPlayer && (
         <button 
           className="btn-secondary" 
@@ -36,7 +47,8 @@ function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePla
         <ResultsView 
           players={players} 
           myPlayer={myPlayer} 
-          showMasterList={showMasterList} 
+          // SECURITY CHECK: Only allow Master List if Host, OR if you are a Spectator
+          showMasterList={isHost ? showMasterList : (!myPlayer)} 
           isRevealed={isRevealed} 
         />
       ) : (
