@@ -11,6 +11,7 @@ function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
         const isMine = myPlayer && takenBy?.id === myPlayer.id;
         const isMyBrought = myPlayer && (num === myBroughtGift);
         
+        // Logic: Disable if taken, if it's my own gift, if not my turn, or if I'm just watching
         const disabled = !!takenBy || isMyBrought || !isMyTurn || isSpectator;
 
         return (
@@ -21,15 +22,11 @@ function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
             disabled={disabled}
           >
             {takenBy ? (
-              // This structure works with the new CSS to force White Text
-              <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-                 <span style={{fontSize:'0.6rem', textTransform:'uppercase', opacity: 0.9}}>TAKEN BY</span>
-                 <span style={{fontSize:'0.9rem', fontWeight:'800', textTransform:'uppercase'}}>{takenBy.name}</span>
-              </div>
+              <span style={{fontSize:'0.8rem'}}>🔒<br/>{takenBy.name}</span>
             ) : isMyBrought ? (
-              <span style={{fontSize:'0.7rem', color:'#aaa'}}>YOUR<br/>GIFT</span>
+              <span style={{fontSize:'0.7rem'}}>🚫<br/>MY GIFT</span>
             ) : (
-              `Gift #${num}`
+              `🎁 #${num}`
             )}
           </button>
         );

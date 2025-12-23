@@ -13,105 +13,286 @@ body {
   align-items: center;
 }
 
-.App { width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-
-/* --- MODERN INPUT LAYOUT (PILL SHAPE) --- */
-.modern-input-group {
-  display: flex !important;
-  gap: 15px !important;
-  justify-content: center !important;
-  align-items: center !important;
-  margin-top: 10px;
+.App { 
+  width: 100%; 
+  min-height: 100vh; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
 }
 
-.modern-input {
-  /* Size & Shape */
-  flex-grow: 1;
-  border: 2px solid #e0e0e0 !important;
-  border-radius: 50px !important; /* FULL ROUNDING */
-  padding: 15px 30px !important;
-  height: 60px !important;
-  
-  /* Text */
-  font-size: 1.5rem !important;
-  font-weight: 600;
-  color: #555;
-  text-align: center;
-  outline: none;
+/* --- NAVBAR --- */
+.navbar { 
+  width: 100%;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 20px 40px; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+.logo-image { height: 50px; }
+.logout { 
+  background: white; 
+  border: 1px solid #ddd; 
+  color: #555; 
+  padding: 8px 16px; 
+  border-radius: 20px; 
+  cursor: pointer; 
+  font-weight: 600; 
+  transition: all 0.2s;
+}
+.logout:hover { background: #f1f1f1; color: #c0392b; }
+
+/* --- MAIN LAYOUT --- */
+.main-content { 
+  width: 100%;
+  max-width: 1000px;
+  padding: 20px;
+  margin-top: 80px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 40px;
+}
+
+.text-section {
+  flex: 1;
+  max-width: 600px;
+}
+
+.image-section {
+  flex: 0 0 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  object-fit: contain;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* --- CARDS --- */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.auth-card, .game-card {
   background: white;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  padding: 40px; 
+  border-radius: 24px; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  width: 100%; 
+  text-align: center; 
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
 }
 
-.modern-input::placeholder { color: #ccc; font-weight: 400; letter-spacing: 1px; }
+.auth-card::before, .game-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: #4CAF50; 
+}
 
-.modern-btn {
-  /* Size & Shape */
-  background: #2E7D32 !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 50px !important; /* FULL ROUNDING */
-  height: 60px !important;
-  padding: 0 40px !important;
-  
-  /* Text */
-  font-size: 1.3rem !important;
-  font-weight: 800 !important;
+/* --- TYPOGRAPHY --- */
+h1.hero-title { 
+  font-family: 'Great Vibes', cursive; 
+  font-size: 3.5rem; 
+  color: #2E7D32; 
+  margin: 0 0 10px 0; 
+  line-height: 1.2;
+}
+h2, h3 { color: #34495e; margin-bottom: 15px; }
+p.hero-subtitle { color: #7f8c8d; font-size: 1.1rem; margin-bottom: 30px; }
+
+/* --- FORMS & INPUTS --- */
+.input-group { margin-bottom: 20px; text-align: left; }
+.input-group label { display: block; font-size: 0.85rem; font-weight: 800; color: #7f8c8d; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.input-group input, .input-group textarea { 
+  width: 100%; 
+  padding: 14px; 
+  border: 2px solid #ecf0f1; 
+  border-radius: 12px; 
+  background: #fdfdfd; 
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+.input-group input:focus, .input-group textarea:focus { outline: none; border-color: #4CAF50; }
+
+/* --- BUTTONS --- */
+.btn-primary { 
+  background: #2E7D32; 
+  color: white; 
+  border: none; 
+  padding: 16px 30px; 
+  border-radius: 12px; 
+  font-weight: 700; 
+  font-size: 1rem;
+  cursor: pointer; 
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3); 
+  transition: transform 0.2s;
+}
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-secondary {
+  background: white;
+  border: 2px solid #bdc3c7;
+  color: #7f8c8d;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 0 #1B5E20 !important;
-  transition: transform 0.1s;
+  width: 100%;
+  transition: all 0.2s;
 }
+.btn-secondary:hover { border-color: #2c3e50; color: #2c3e50; }
 
-.modern-btn:hover { background: #388E3C !important; transform: translateY(-2px); }
-.modern-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1B5E20 !important; }
+.auth-toggle { margin-top: 20px; font-size: 0.9rem; color: #95a5a6; cursor: pointer; text-decoration: underline; }
 
-/* --- GIFT GRID (Fixing the Green Box Text) --- */
-.grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; margin-top: 20px; }
-
+/* --- GRID --- */
+.grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 12px; margin-top: 20px; }
 .gift-box-btn { 
   background: #D32F2F; 
   color: white; 
   border: none; 
   aspect-ratio: 1; 
-  border-radius: 16px; 
+  border-radius: 12px; 
+  font-weight: 800; 
+  font-size: 1rem; 
   cursor: pointer; 
   display: flex; 
   flex-direction: column; 
   justify-content: center; 
   align-items: center; 
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.1s; 
 }
+.gift-box-btn:active { transform: translateY(2px); }
 
+/* UPDATED: Green background for taken gifts */
 .gift-box-btn.taken { 
-  background: #4CAF50 !important; /* Green Background */
-  border: 2px solid #4CAF50 !important;
-  opacity: 1 !important; /* Make sure it's not faded */
+  background: #4CAF50; 
+  color: white !important; /* Force white text */
+  cursor: not-allowed; 
+  border: 1px solid #388E3C; 
 }
-
-/* Forces the text inside the green box to be white */
+/* Ensures the text inside the button is white */
 .gift-box-btn.taken span {
-  color: white !important; 
+  color: white !important;
+}
+
+.gift-box-btn.mine { background: #FF9800; } 
+.gift-box-btn.disabled-own { background: #fff; color: #ccc; border: 2px dashed #eee; }
+
+/* --- CHIPS --- */
+.player-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+.chip { background: #f5f5f5; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: #555; }
+
+/* --- MODERN INPUT GROUP (PILL SHAPE) --- */
+/* Now OUTSIDE the media query so it works on desktop */
+.modern-input-group {
+  display: flex;
+  gap: 10px; /* Gap between input and button */
+  background: transparent; /* Removed container background for cleaner look */
+  padding: 5px 0;
+  margin-top: 10px;
+}
+
+.modern-input {
+  flex-grow: 1;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 50px; /* Full Rounded */
+  padding: 15px 25px;
+  font-size: 1.2rem;
   font-weight: bold;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  outline: none;
+  color: #2c3e50;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.gift-box-btn.mine { background: #FF9800 !important; } 
-.gift-box-btn.disabled-own { background: #fff; color: #ccc; border: 2px dashed #eee; box-shadow: none; }
-
-/* --- LAYOUT FIXES --- */
-.main-content { 
-  width: 100%; max-width: 1000px; padding: 20px; margin-top: 80px; 
-  display: flex; flex-direction: row; align-items: flex-start; justify-content: center; gap: 40px; 
+.modern-input:focus {
+  border-color: #2E7D32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
 }
-.auth-card, .game-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; border: 1px solid #f0f0f0; }
-.hero-title { font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: #2E7D32; margin: 0; }
-.navbar { position: absolute; top: 0; left: 0; width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; }
-.image-section { flex: 0 0 300px; display: flex; justify-content: center; }
-.hero-image { max-width: 100%; height: auto; animation: float 6s ease-in-out infinite; }
-@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
 
-/* Mobile */
+.modern-input::placeholder {
+  color: #ccc;
+  letter-spacing: 1px;
+}
+
+.modern-btn {
+  background: #2E7D32;
+  color: white;
+  border: none;
+  padding: 15px 35px;
+  border-radius: 50px; /* Full Rounded */
+  font-weight: 800;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 4px 0 #1B5E20; /* 3D effect */
+  min-width: 120px;
+}
+
+.modern-btn:hover {
+  background: #388E3C;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #1B5E20;
+}
+
+.modern-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #1B5E20;
+}
+
+.modern-btn:disabled {
+  background: #a5d6a7;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* --- MOBILE OPTIMIZATION --- */
 @media (max-width: 800px) {
-  .main-content { flex-direction: column; align-items: center; margin-top: 60px; }
+  .main-content { flex-direction: column; align-items: center; gap: 20px; margin-top: 60px; }
   .image-section { order: -1; max-width: 150px; } 
+  .hero-image { max-width: 100%; }
+  .text-section { width: 100%; }
+  h1.hero-title { font-size: 2.8rem; }
+  
+  /* On mobile, stack them if needed, or keep row */
+  .modern-input-group {
+    flex-direction: row; 
+  }
+  .modern-input {
+    font-size: 1rem;
+    padding: 12px;
+  }
+  .modern-btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
 }
