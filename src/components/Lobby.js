@@ -20,7 +20,7 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
 
   return (
     <>
-      {/* NEW: ROOM CODE DISPLAY */}
+      {/* ROOM CODE CARD */}
       <div style={{textAlign: 'center', marginBottom: '30px', background: '#fff', padding: '20px', borderRadius: '15px', border: '2px dashed #D64045'}}>
         <span style={{fontSize: '0.9rem', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', fontWeight:'bold'}}>Room Code</span>
         <h1 style={{fontSize: '3.5rem', color: '#D64045', margin: '5px 0', letterSpacing: '5px', fontFamily: 'monospace', fontWeight:'900'}}>{roomCode}</h1>
@@ -33,7 +33,7 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
       </div>
 
       {isHost ? (
-        // --- HOST PANEL ---
+        // --- HOST CONTROLS ---
         <div className="admin-panel">
           <div className="input-group">
             <label>Set Budget / Price Rule</label>
@@ -47,7 +47,7 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
             </div>
           </div>
           
-          {/* Host Wishlist (If they are playing) */}
+          {/* Host Wishlist (Only if they joined as a player) */}
           {myPlayer && (
             <div className="input-group" style={{textAlign:'left', marginTop:'15px'}}>
               <label>📝 Your Wishlist</label>
@@ -69,7 +69,7 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
           <button className="btn-secondary" onClick={actions.resetGame}>🔄 Reset Everything</button>
         </div>
       ) : (
-        // --- PLAYER PANEL ---
+        // --- PLAYER CONTROLS ---
         <div className="admin-panel" style={{textAlign:'left'}}>
            <div className="input-group">
             <label>📝 Your Wishlist (Secret until reveal!)</label>

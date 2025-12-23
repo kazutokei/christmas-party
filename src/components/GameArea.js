@@ -7,8 +7,7 @@ import ResultsView from './ResultsView';
 function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePlayer, isMyTurn, myBroughtGift, actions }) {
   const showResults = isGameOver || isRevealed;
   
-  // Default to showing Master List if I'm NOT playing (just hosting). 
-  // If I AM playing, default to hiding it (Player View) so I don't spoil myself.
+  // Toggle: If I am just a Host (spectator), show Master List. If I am playing, show Player View.
   const [showMasterList, setShowMasterList] = useState(!myPlayer);
 
   return (

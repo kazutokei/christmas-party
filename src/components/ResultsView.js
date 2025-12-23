@@ -33,7 +33,7 @@ function ResultsView({ players, myPlayer, isHost, isRevealed, showMasterList }) 
     );
   }
 
-  // 2. PLAYER VIEW (Secret Phase)
+  // 2. SECRET PHASE (Waiting)
   if (!isRevealed) {
     return (
       <div className="secret-card">
@@ -45,7 +45,7 @@ function ResultsView({ players, myPlayer, isHost, isRevealed, showMasterList }) 
     );
   }
 
-  // 3. PLAYER VIEW (Revealed Phase)
+  // 3. REVEALED PHASE (My Result)
   const myGiftPerson = myPlayer?.picked_number ? players[myPlayer.picked_number - 1] : null;
 
   return (
