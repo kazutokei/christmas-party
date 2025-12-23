@@ -21,7 +21,11 @@ function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
             disabled={disabled}
           >
             {takenBy ? (
-              <span style={{fontSize:'0.75rem', textTransform:'uppercase', color:'white', fontWeight:'bold'}}>Taken by<br/><span style={{fontSize:'0.9rem'}}>{takenBy.name}</span></span>
+              // This structure works with the new CSS to force White Text
+              <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
+                 <span style={{fontSize:'0.6rem', textTransform:'uppercase', opacity: 0.9}}>TAKEN BY</span>
+                 <span style={{fontSize:'0.9rem', fontWeight:'800', textTransform:'uppercase'}}>{takenBy.name}</span>
+              </div>
             ) : isMyBrought ? (
               <span style={{fontSize:'0.7rem', color:'#aaa'}}>YOUR<br/>GIFT</span>
             ) : (

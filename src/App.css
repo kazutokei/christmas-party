@@ -1,130 +1,117 @@
-import React, { useState } from 'react';
-import { supabase, generateRoomCode } from '../services/supabaseClient';
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Great+Vibes&display=swap');
 
-function Home({ session, onJoinRoom }) {
-  const [joinCode, setJoinCode] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [joinAsPlayer, setJoinAsPlayer] = useState(true);
+* { box-sizing: border-box; }
 
-  // --- CREATE A NEW ROOM ---
-  const handleCreateRoom = async () => {
-    if (joinAsPlayer && !displayName) return alert("Please enter your name to play!");
-    
-    setLoading(true);
-    const newCode = generateRoomCode();
-    const userId = session.user.id;
-
-    // 1. Create Room
-    const { data: room, error: roomError } = await supabase
-      .from('rooms')
-      .insert([{ code: newCode, host_id: userId }])
-      .select()
-      .single();
-
-    if (roomError) {
-      setLoading(false);
-      return alert(roomError.message);
-    }
-
-    // 2. Add Host as Participant (If checked)
-    if (joinAsPlayer) {
-      const { error: partError } = await supabase
-        .from('participants')
-        .insert([{ room_id: room.id, user_id: userId, name: displayName }]);
-
-      if (partError) {
-        setLoading(false);
-        return alert(partError.message);
-      }
-    }
-
-    setLoading(false);
-    onJoinRoom(room.id); 
-  };
-
-  // --- JOIN AN EXISTING ROOM ---
-  const handleJoinRoom = async () => {
-    if (!displayName) return alert("Please enter your name!");
-    if (!joinCode) return alert("Enter a room code!");
-    setLoading(true);
-
-    // 1. Find Room
-    const { data: room, error: findError } = await supabase
-      .from('rooms')
-      .select('*')
-      .eq('code', joinCode.toUpperCase())
-      .single();
-
-    if (findError || !room) {
-      setLoading(false);
-      return alert("Room not found! Check the code.");
-    }
-
-    // 2. Add Player to Room
-    // Check if already joined first to avoid duplicates
-    const { data: existing } = await supabase.from('participants').select('*').eq('room_id', room.id).eq('user_id', session.user.id).single();
-
-    if (!existing) {
-      const { error: joinError } = await supabase
-        .from('participants')
-        .insert([{ room_id: room.id, user_id: session.user.id, name: displayName }]);
-
-      if (joinError) {
-        setLoading(false);
-        return alert(joinError.message);
-      }
-    }
-
-    setLoading(false);
-    onJoinRoom(room.id);
-  };
-
-  return (
-    <div className="auth-container">
-      <div className="auth-card" style={{maxWidth: '550px'}}> {/* Slightly wider for the new buttons */}
-        <h1 className="hero-title">Welcome</h1>
-        <p className="hero-subtitle">What would you like to do?</p>
-        
-        <div className="input-group">
-          <label>Your Nickname</label>
-          <input placeholder="e.g. Kent" value={displayName} onChange={e => setDisplayName(e.target.value)} />
-        </div>
-
-        <hr style={{margin: '30px 0', borderTop: '1px solid #eee'}}/>
-
-        {/* JOIN SECTION - UPDATED LAYOUT */}
-        <div style={{background: '#fcfcfc', padding: '30px', borderRadius: '20px', marginBottom: '20px', border: '1px solid #f0f0f0'}}>
-          <h3 style={{textAlign: 'center', marginBottom: '20px', color: '#34495e', fontSize: '1.2rem'}}>Enter a Room Code</h3>
-          
-          <div className="modern-input-group">
-            <input 
-              className="modern-input"
-              placeholder="ENTER CODE" 
-              value={joinCode}
-              onChange={e => setJoinCode(e.target.value)}
-              maxLength={6}
-            />
-            <button className="modern-btn" onClick={handleJoinRoom} disabled={loading}>JOIN</button>
-          </div>
-        </div>
-
-        <div style={{textAlign: 'center', color: '#ccc', fontWeight: 'bold', marginBottom: '20px', fontSize: '0.9rem'}}>- OR -</div>
-
-        {/* CREATE SECTION */}
-        <div style={{border: '2px dashed #4CAF50', padding: '20px', borderRadius: '16px', background: '#f1f8e9'}}>
-          <h3 style={{color: '#2E7D32', marginTop:0, textAlign: 'center'}}>Create New Lobby</h3>
-          <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px', justifyContent: 'center'}}>
-            <input type="checkbox" id="joinCheck" style={{width:'18px', height:'18px', accentColor: '#2E7D32'}} checked={joinAsPlayer} onChange={e => setJoinAsPlayer(e.target.checked)} />
-            <label htmlFor="joinCheck" style={{cursor:'pointer', color:'#555', fontWeight: '600', fontSize: '0.9rem'}}>I want to join as a player too</label>
-          </div>
-          <button className="btn-primary" style={{width:'100%', padding: '18px'}} onClick={handleCreateRoom} disabled={loading}>
-             Create & Host
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+body { 
+  margin: 0; 
+  background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%);
+  font-family: 'Outfit', sans-serif; 
+  color: #2c3e50; 
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-export default Home;
+.App { width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+/* --- MODERN INPUT LAYOUT (PILL SHAPE) --- */
+.modern-input-group {
+  display: flex !important;
+  gap: 15px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-top: 10px;
+}
+
+.modern-input {
+  /* Size & Shape */
+  flex-grow: 1;
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 50px !important; /* FULL ROUNDING */
+  padding: 15px 30px !important;
+  height: 60px !important;
+  
+  /* Text */
+  font-size: 1.5rem !important;
+  font-weight: 600;
+  color: #555;
+  text-align: center;
+  outline: none;
+  background: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.modern-input::placeholder { color: #ccc; font-weight: 400; letter-spacing: 1px; }
+
+.modern-btn {
+  /* Size & Shape */
+  background: #2E7D32 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50px !important; /* FULL ROUNDING */
+  height: 60px !important;
+  padding: 0 40px !important;
+  
+  /* Text */
+  font-size: 1.3rem !important;
+  font-weight: 800 !important;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #1B5E20 !important;
+  transition: transform 0.1s;
+}
+
+.modern-btn:hover { background: #388E3C !important; transform: translateY(-2px); }
+.modern-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1B5E20 !important; }
+
+/* --- GIFT GRID (Fixing the Green Box Text) --- */
+.grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; margin-top: 20px; }
+
+.gift-box-btn { 
+  background: #D32F2F; 
+  color: white; 
+  border: none; 
+  aspect-ratio: 1; 
+  border-radius: 16px; 
+  cursor: pointer; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.gift-box-btn.taken { 
+  background: #4CAF50 !important; /* Green Background */
+  border: 2px solid #4CAF50 !important;
+  opacity: 1 !important; /* Make sure it's not faded */
+}
+
+/* Forces the text inside the green box to be white */
+.gift-box-btn.taken span {
+  color: white !important; 
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.gift-box-btn.mine { background: #FF9800 !important; } 
+.gift-box-btn.disabled-own { background: #fff; color: #ccc; border: 2px dashed #eee; box-shadow: none; }
+
+/* --- LAYOUT FIXES --- */
+.main-content { 
+  width: 100%; max-width: 1000px; padding: 20px; margin-top: 80px; 
+  display: flex; flex-direction: row; align-items: flex-start; justify-content: center; gap: 40px; 
+}
+.auth-card, .game-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; border: 1px solid #f0f0f0; }
+.hero-title { font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: #2E7D32; margin: 0; }
+.navbar { position: absolute; top: 0; left: 0; width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; }
+.image-section { flex: 0 0 300px; display: flex; justify-content: center; }
+.hero-image { max-width: 100%; height: auto; animation: float 6s ease-in-out infinite; }
+@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+
+/* Mobile */
+@media (max-width: 800px) {
+  .main-content { flex-direction: column; align-items: center; margin-top: 60px; }
+  .image-section { order: -1; max-width: 150px; } 
+}
