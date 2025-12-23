@@ -47,7 +47,7 @@ function ResultsView({ players, myPlayer, showMasterList, isRevealed }) {
 
   return (
     <div style={{animation: 'popIn 0.5s ease'}}>
-       <h1 style={{color: '#999', fontSize: '1rem', textTransform:'uppercase', letterSpacing:'2px'}}>You received a gift from</h1>
+       <h1 style={{color: '#999', fontSize: '1rem', textTransform:'uppercase', letterSpacing:'2px'}}>The Person You Picked</h1>
        
        <div style={{
          background: 'white', 
