@@ -9,7 +9,7 @@ import GameArea from './components/GameArea';
 
 function App() {
   const [session, setSession] = useState(null);
-  const [roomId, setRoomId] = useState(null);
+  const [roomId, setRoomId] = useState(() => localStorage.getItem('christmas_room_id'));
   
   const {
     roomData,
@@ -21,8 +21,17 @@ function App() {
     isGameOver,
     myBroughtGift,
     actions,
-    clearRoom
+    clearRoom,
+    roomError
   } = useRoom(roomId, session);
+
+  // If room is not found (e.g. deleted), clear it from state/localStorage
+  useEffect(() => {
+    if (roomError) {
+      setRoomId(null);
+      clearRoom();
+    }
+  }, [roomError, clearRoom]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
@@ -32,6 +41,15 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Persist Room ID to localStorage
+  useEffect(() => {
+    if (roomId) {
+      localStorage.setItem('christmas_room_id', roomId);
+    } else {
+      localStorage.removeItem('christmas_room_id');
+    }
+  }, [roomId]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

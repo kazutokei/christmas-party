@@ -6,6 +6,7 @@ export function useRoom(roomId, session) {
   const [roomData, setRoomData] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [myParticipant, setMyParticipant] = useState(null);
+  const [roomError, setRoomError] = useState(null);
 
   const fetchParticipants = useCallback(async () => {
     if (!roomId) return;
@@ -19,8 +20,18 @@ export function useRoom(roomId, session) {
 
   const fetchRoomData = useCallback(async () => {
     if (!roomId) return;
-    const { data: r } = await supabase.from('rooms').select('*').eq('id', roomId).single();
-    if (r) setRoomData(r);
+    const { data: r, error } = await supabase.from('rooms').select('*').eq('id', roomId).single();
+    
+    if (error) {
+      console.error("Error fetching room:", error);
+      setRoomError("Room not found");
+      return;
+    }
+
+    if (r) {
+      setRoomData(r);
+      setRoomError(null);
+    }
     fetchParticipants();
   }, [roomId, fetchParticipants]);
 
@@ -116,6 +127,7 @@ export function useRoom(roomId, session) {
     isGameOver,
     myBroughtGift,
     actions,
-    clearRoom
+    clearRoom,
+    roomError
   };
 }
