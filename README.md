@@ -1,8 +1,8 @@
-# 🎁 Gift Exchange Party App
+# Gift Exchange Party App
 
 A modern, real-time web application for hosting virtual Gift Exchanges (like Secret Santa or White Elephant). Built with React and Supabase, this app provides a seamless, synchronous experience for all party guests whether they are in the same room or across the world.
 
-## ✨ Features
+## Features
 
 - **Real-Time Multiplayer:** Instant state synchronization across all players using Supabase Realtime subscriptions.
 - **Host Controls:** The lobby host has administrative power to set the theme/budget, start the game, and reveal the final results.
@@ -12,14 +12,14 @@ A modern, real-time web application for hosting virtual Gift Exchanges (like Sec
 - **Responsive & Accessible:** Fully optimized for mobile devices and small screens. Built with inclusive language to suit any celebration.
 - **Row-Level Security (RLS):** Fully secured database structure ensuring players can only join and interact with authorized game data.
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Frontend:** React.js, CSS3 (CSS Grid, Flexbox, Glassmorphism UI)
 - **Backend/Database:** Supabase (PostgreSQL)
 - **Authentication:** Supabase Auth (Email/Password)
 - **Animations:** `react-confetti`, custom CSS keyframes
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 You will need Node.js installed on your machine and a free [Supabase](https://supabase.com/) account.
@@ -51,7 +51,7 @@ npm start
 ```
 The application will be available at `http://localhost:3000`.
 
-## 🎮 How to Play
+## How to Play
 
 1. **Host a Lobby:** One person signs up and clicks "Create & Host". They will be given a 6-letter Room Code.
 2. **Join the Lobby:** The rest of the party signs up and enters the Room Code to join the lobby.
@@ -59,5 +59,5 @@ The application will be available at `http://localhost:3000`.
 4. **Start Game:** The Host starts the game. Guests take turns picking numbers from the interactive gift grid.
 5. **Reveal:** Once everyone has picked, the Host triggers the big reveal. Confetti drops, and everyone finds out who they are buying a gift for!
 
-## 📜 License
+## License
 This project is open-source and available under the MIT License. Feel free to use it for your own holiday parties!
