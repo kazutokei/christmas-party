@@ -50,7 +50,7 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
         <strong style={{color: '#2E7D32', display:'block', marginBottom:'5px', textTransform:'uppercase', letterSpacing:'1px', fontSize:'0.8rem'}}>
           {APP_TEXT.priceLabel || "BUDGET / RULE"}
         </strong>
-        <span style={{fontSize: '1.5rem', fontWeight: '800', color: '#2E7D32'}}>
+        <span style={{fontSize: '1.5rem', fontWeight: '800', color: '#2E7D32', display: 'block', maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}} title={priceRule || "Open Budget"}>
           {priceRule || "Open Budget"}
         </span>
       </div>
@@ -58,12 +58,12 @@ function Lobby({ roomCode, players, myPlayer, isHost, actions, priceRule }) {
       {isHost ? (
         // --- HOST CONTROLS ---
         <div className="admin-panel" style={{marginBottom: '30px'}}>
-          <label style={{fontWeight:'bold', color:'#555', marginLeft:'10px'}}>Update Budget</label>
+          <label style={{fontWeight:'bold', color:'#555', marginLeft:'10px'}}>Update Theme / Budget</label>
           
           <div className="modern-input-group" style={{marginTop:'5px', marginBottom:'20px'}}>
             <input 
               className="modern-input"
-              placeholder="e.g. 500 PHP" 
+              placeholder="e.g. 500 PHP or 'Funny Hats'" 
               value={newPrice} 
               onChange={(e) => setNewPrice(e.target.value)} 
               style={{fontSize: '1.1rem'}} 

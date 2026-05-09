@@ -26,7 +26,13 @@ body {
   position: absolute;
   top: 0; left: 0; z-index: 10;
 }
-.logo-image { height: 50px; }
+.logo-image { 
+  height: 50px; 
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
 .logout { 
   background: white; border: 1px solid #ddd; color: #555; 
   padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 600; 
@@ -40,22 +46,23 @@ body {
   max-width: 1100px; /* Wider container */
   padding: 20px;
   margin-top: 80px;
-  display: flex;
-  flex-direction: row; 
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center; /* Vertically Centers the card and image */
-  justify-content: center;
   gap: 60px; /* More breathing room */
 }
 
 .text-section {
-  flex: 1;
+  width: 100%;
   max-width: 550px; /* Keeps the card from getting too wide */
+  justify-self: end; /* Aligns card properly in grid */
   z-index: 2; /* Ensures card stays above image if they overlap on small screens */
 }
 
 .image-section {
-  flex: 1; /* Allows image area to grow */
+  width: 100%;
   display: flex;
+  justify-self: start;
   justify-content: center;
   align-items: center;
 }
@@ -68,6 +75,10 @@ body {
   object-fit: contain;
   filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15)); /* Nice soft shadow */
   animation: cuteFloat 6s ease-in-out infinite;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 }
 
 /* "Pretty" Animation: Floats up/down and slightly tilts */
@@ -81,15 +92,24 @@ body {
 .auth-container { display: flex; justify-content: center; width: 100%; }
 
 .auth-card, .game-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.85); /* Semi-transparent white */
+  backdrop-filter: blur(16px); /* Glassmorphism blur */
+  -webkit-backdrop-filter: blur(16px);
   padding: 40px; 
-  border-radius: 30px; /* Softer corners */
-  box-shadow: 0 20px 60px rgba(0,0,0,0.08); /* Modern shadow */
+  border-radius: 30px; 
+  box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.5) inset; /* Soft shadow and inner glow */
   width: 100%; 
   text-align: center; 
   position: relative;
   overflow: hidden;
-  border: 1px solid #fff;
+  border: 1px solid rgba(255, 255, 255, 0.6); /* Frosty border */
+}
+
+.auth-card {
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .auth-card::before, .game-card::before {
@@ -103,10 +123,17 @@ body {
 /* --- TYPOGRAPHY --- */
 h1.hero-title { 
   font-family: 'Great Vibes', cursive; 
-  font-size: 3.5rem; 
-  color: #2E7D32; 
+  font-size: 4rem; 
+  background: linear-gradient(90deg, #1B5E20, #4CAF50);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin: 0 0 10px 0; 
   line-height: 1.2;
+  filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.05)); /* Subtle depth */
+  height: 90px; /* Locked height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 h2, h3 { color: #34495e; margin-bottom: 15px; }
 p.hero-subtitle { color: #7f8c8d; font-size: 1.1rem; margin-bottom: 30px; }
@@ -134,10 +161,11 @@ p.hero-subtitle { color: #7f8c8d; font-size: 1.1rem; margin-bottom: 30px; }
 /* --- GIFT GRID --- */
 .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 12px; margin-top: 20px; }
 .gift-box-btn { 
-  background: #D32F2F; color: white; border: none; aspect-ratio: 1; border-radius: 16px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: transform 0.1s; 
+  background: #D32F2F; color: white; border: none; aspect-ratio: 1; border-radius: 16px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
   box-shadow: 0 4px 0 #b71c1c;
 }
-.gift-box-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #b71c1c; }
+.gift-box-btn:hover:not(.taken):not(.disabled-own) { transform: translateY(-4px); box-shadow: 0 8px 0 #b71c1c; filter: brightness(1.1); }
+.gift-box-btn:active:not(.taken):not(.disabled-own) { transform: translateY(2px); box-shadow: 0 2px 0 #b71c1c; }
 
 .gift-box-btn.taken { background: #4CAF50; color: white !important; cursor: not-allowed; border: 1px solid #388E3C; box-shadow: none; }
 .gift-box-btn.taken span { color: white !important; }
@@ -149,10 +177,10 @@ p.hero-subtitle { color: #7f8c8d; font-size: 1.1rem; margin-bottom: 30px; }
 .chip { background: #f5f5f5; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: #555; }
 
 /* --- MODERN INPUT (PILL SHAPE) --- */
-.modern-input-group { display: flex; gap: 10px; background: transparent; padding: 5px 0; margin-top: 10px; }
+.modern-input-group { display: flex; gap: 10px; background: transparent; padding: 5px 0; margin-top: 10px; width: 100%; align-items: center; justify-content: center; }
 
 .modern-input {
-  flex-grow: 1; background: white; border: 2px solid #e0e0e0; border-radius: 50px; padding: 15px 25px; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-align: center; outline: none; color: #2c3e50; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  flex: 1 1 0%; min-width: 0; background: white; border: 2px solid #e0e0e0; border-radius: 50px; padding: 15px 25px; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-align: center; outline: none; color: #2c3e50; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 .modern-input:focus { border-color: #2E7D32; box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1); }
 .modern-input::placeholder { color: #ccc; letter-spacing: 1px; }
@@ -166,14 +194,14 @@ p.hero-subtitle { color: #7f8c8d; font-size: 1.1rem; margin-bottom: 30px; }
 
 /* --- MOBILE OPTIMIZATION --- */
 @media (max-width: 900px) {
-  .main-content { flex-direction: column-reverse; /* Puts image ON TOP of card */ gap: 30px; margin-top: 70px; }
+  .main-content { display: flex; flex-direction: column-reverse; /* Puts image ON TOP of card */ gap: 30px; margin-top: 70px; }
   
-  .image-section { width: 100%; max-width: 300px; } /* Slightly smaller on mobile */
-  .text-section { width: 100%; }
+  .image-section { width: 100%; max-width: 300px; justify-self: center; } /* Slightly smaller on mobile */
+  .text-section { width: 100%; justify-self: center; }
   
-  h1.hero-title { font-size: 2.8rem; }
+  h1.hero-title { font-size: 2.8rem; height: auto; min-height: 60px; }
   
-  .modern-input-group { flex-direction: row; }
-  .modern-input { font-size: 1rem; padding: 12px; }
-  .modern-btn { padding: 12px 20px; font-size: 1rem; }
+  .modern-input-group { flex-direction: column; width: 100%; gap: 15px; }
+  .modern-input { font-size: 1rem; padding: 12px; width: 100%; }
+  .modern-btn { padding: 12px 20px; font-size: 1rem; width: 100%; }
 }

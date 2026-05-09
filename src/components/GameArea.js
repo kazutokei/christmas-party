@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Confetti from 'react-confetti';
 import { APP_TEXT } from '../config';
 import AdminControls from './AdminControls';
 import GiftGrid from './GiftGrid';
@@ -20,6 +21,15 @@ function GameArea({ players, myPlayer, isHost, isGameOver, isRevealed, activePla
 
   return (
     <div className="game-card">
+      {isRevealed && (
+        <Confetti 
+          width={window.innerWidth} 
+          height={window.innerHeight} 
+          recycle={false} 
+          numberOfPieces={800} 
+          gravity={0.15}
+        />
+      )}
       <div className="status-bar" style={{marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #eee'}}>
         {showResults ? (
           <h2 style={{margin:0, color:'#c0392b'}}>{isRevealed ? APP_TEXT.christmasTitle : APP_TEXT.revealTitle}</h2>

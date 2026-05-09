@@ -3,16 +3,16 @@ export const APP_TEXT = {
   welcomeGuest: "Welcome, Guest!",
   waitingSubtitle: "Wait for everyone to arrive!",
   revealTitle: "REVEAL TIME!",
-  christmasTitle: "MERRY CHRISTMAS!",
+  christmasTitle: "HAPPY GIFTING!",
   turnMine: "IT'S YOUR TURN!",
-  secretTitle: "Neeeever isaba!",
+  secretTitle: "It's a Secret!",
   secretBody: "Wait for the Host to reveal the results...",
-  secretFooter: 'Neeeeeverrrrr dili mu-attend!',
-  revealHeader: "IMONG NAPILIAN KAY SI......",
-  revealQuote: 'Neeeeeverrrrr dili mu-attend, dili mu-attend!',
+  secretFooter: "No peeking until everyone is ready!",
+  revealHeader: "YOU ARE GETTING A GIFT FOR...",
+  revealQuote: "Get ready to spread some holiday cheer!",
 
 // NEW LABELS
-  priceLabel: "Gift Price Rule:",
+  priceLabel: "Theme & Budget:",
   wishlistPlaceholder: "Type your wishlist here (e.g. Socks, Mug)...",
   wishlistSaved: "Wishlist Saved!"
 };

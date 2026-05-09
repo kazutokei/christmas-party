@@ -45,7 +45,7 @@ function AuthScreen() {
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
           <button className="btn-primary" disabled={loading}>
-            {loading ? "Processing..." : (isRegistering ? "Sign Up" : "Log In")}
+            {loading ? (isRegistering ? "Creating Account..." : "Logging In...") : (isRegistering ? "Sign Up" : "Log In")}
           </button>
         </form>
         
