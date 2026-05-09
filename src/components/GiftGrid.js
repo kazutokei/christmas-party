@@ -1,4 +1,5 @@
 import React from 'react';
+import { Gift, Lock, Ban } from 'lucide-react';
 
 function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
   const isSpectator = !myPlayer;
@@ -22,11 +23,20 @@ function GiftGrid({ players, myPlayer, isMyTurn, myBroughtGift, onPick }) {
             disabled={disabled}
           >
             {takenBy ? (
-              <span style={{fontSize:'0.8rem'}}>🔒<br/>{takenBy.name}</span>
+              <span style={{fontSize:'0.8rem', display:'flex', flexDirection:'column', alignItems:'center', gap:'4px'}}>
+                <Lock size={16} strokeWidth={2.5} />
+                <span>{takenBy.name}</span>
+              </span>
             ) : isMyBrought ? (
-              <span style={{fontSize:'0.7rem'}}>🚫<br/>MY GIFT</span>
+              <span style={{fontSize:'0.7rem', display:'flex', flexDirection:'column', alignItems:'center', gap:'4px'}}>
+                <Ban size={16} strokeWidth={2.5} />
+                <span>MY GIFT</span>
+              </span>
             ) : (
-              `🎁 #${num}`
+              <span style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'4px'}}>
+                <Gift size={28} strokeWidth={2.5} />
+                <span style={{fontWeight:'800'}}>#{num}</span>
+              </span>
             )}
           </button>
         );
